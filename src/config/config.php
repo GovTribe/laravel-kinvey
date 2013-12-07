@@ -12,9 +12,9 @@ return array(
 	*/
 
 	'appName'		=> '',
-	'appKey'       	=> '',
-	'appSecret'    	=> '',
-	'masterSecret' 	=> '',
+	'appKey'		=> '',
+	'appSecret'		=> '',
+	'masterSecret'	=> '',
 
 	/*
 	| -----------------------------------------------------------------------------
@@ -25,6 +25,6 @@ return array(
 	|
 	*/
 
-	'hostEndpoint' => 'https://baas.kinvey.com/',
-	'version'      => 2,
+	'hostEndpoint' 	=> 'https://baas.kinvey.com/',
+	'version'		=> 2,
 );
