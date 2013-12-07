@@ -1,10 +1,12 @@
-# Integration between Laravel 4 and [Kinvey](http://www.kinvey.com)
+# laravel-kinvey
 
 This pacakge provides integration between Kinvey's great backend as a service platform and Laravel 4. It's based on version 2 of the [REST API](http://devcenter.kinvey.com/rest/guides/getting-started).
 
 - [Install](#installation)
-- [Configure](#installation)
+- [Configure](#configure)
 - [Supported Endpoints](#supported-endpoints)
+
+*Note*: This is basically a service provider wrapping the Kinvey API endpoints. Deeper integration with Laravel is to come...
 
 ## Install
 
