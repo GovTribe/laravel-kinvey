@@ -32,9 +32,6 @@ class UserTest extends LaravelKinveyTestCase {
 		$this->assertEquals('Guy', $this->testUser['last_name'], 'last_name key is equal to Guy');
 
 		$this->assertArrayHasKey('password', $this->testUser, 'Response has password key');
-
-
-
 	}
 
 	/**

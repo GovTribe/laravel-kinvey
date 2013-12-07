@@ -13,11 +13,9 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "4.0.x",
-        "phpunit/phpunit": "3.7.*",
         "guzzle/guzzle": "~3.7"
     },
     "require-dev": {
-        "mockery/mockery": "dev-master@dev",
         "phpunit/phpunit": "3.7.*",
         "orchestra/testbench": "2.0.*"
     },

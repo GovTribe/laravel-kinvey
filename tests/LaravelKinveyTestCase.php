@@ -27,6 +27,24 @@ abstract class LaravelKinveyTestCase extends TestCase {
 	}
 
 	/**
+	 * Setup the test environment.
+	 *
+	 * @return array
+	 */
+	public function setup()
+	{
+		parent::setup();
+
+		extract(include __DIR__.'/TestConfig.php');
+		$this->app['config']->set('laravel-kinvey::appName', $appName);
+		$this->app['config']->set('laravel-kinvey::baseURL', $hostEndpoint);
+		$this->app['config']->set('laravel-kinvey::appKey', $appKey);
+		$this->app['config']->set('laravel-kinvey::appSecret', $appSecret);
+		$this->app['config']->set('laravel-kinvey::masterSecret', $masterSecret);
+		$this->app['config']->set('laravel-kinvey::version', $version);
+	}
+
+	/**
 	 * Create a test user via the signUp() method.
 	 *
 	 * @return array
@@ -59,5 +77,4 @@ abstract class LaravelKinveyTestCase extends TestCase {
 			'hard'	=> 'true',
 		));
 	}
-
 }

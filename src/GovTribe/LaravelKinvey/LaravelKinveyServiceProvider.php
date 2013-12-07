@@ -31,8 +31,6 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['config']->package('govtribe/laravel-kinvey', __DIR__.'/../config');
-
 		$this->app['kinvey'] = $this->app->share(function($app)
 		{
 			return $this->buildKinveyAPIClient();
