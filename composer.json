@@ -1,0 +1,33 @@
+{
+    "name": "govtribe/laravel-kinvey",
+    "description": "Laravel-Kinvey is a Kinvey package for Laravel 4.",
+    "keywords": ["Kinvey", "Laravel 4"],
+    "license": "MIT",
+    "homepage": "https://github.com/GovTribe/laravel-kinvey",
+    "authors": [
+        {
+            "name": "Jay Hariani",
+            "email": "jay@govtribe.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.0.x",
+        "phpunit/phpunit": "3.7.*",
+        "guzzle/guzzle": "~3.7"
+    },
+    "require-dev": {
+        "mockery/mockery": "dev-master@dev",
+        "phpunit/phpunit": "3.7.*",
+        "orchestra/testbench": "2.0.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "GovTribe\\LaravelKinvey": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
