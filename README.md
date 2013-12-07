@@ -6,6 +6,8 @@ This pacakge provides integration between Kinvey's great backend as a service pl
 - [Configure](#installation)
 - [Supported Endpoints](#supported-endpoints)
 
+*Note*: This is basically a service provider wrapping the Kinvey API endpoints. Deeper integration with Laravel is to come...
+
 ## Install
 
 Add laravel-kinvey to your composer.json file:
