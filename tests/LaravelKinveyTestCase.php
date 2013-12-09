@@ -1,5 +1,6 @@
-<?php
+<?php namespace Govtribe\LaravelKinvey\Tests;
 
+use GovTribe\LaravelKinvey\Facades\Kinvey;
 use Orchestra\Testbench\TestCase;
 
 abstract class LaravelKinveyTestCase extends TestCase {
@@ -45,13 +46,13 @@ abstract class LaravelKinveyTestCase extends TestCase {
 	}
 
 	/**
-	 * Create a test user via the signUp() method.
+	 * Create a test user.
 	 *
 	 * @return array
 	 */
 	public static function createTestUser()
 	{
-		$response = Kinvey::signUp(
+		return Kinvey::createUser(
 			array(
 				'data' => array(
 					'username'	=> 'test.guy@foo.com',
@@ -61,20 +62,52 @@ abstract class LaravelKinveyTestCase extends TestCase {
 				)
 			)
 		);
-		return $response;
 	}
 
 	/**
-	 * Delete a test user
+	 * Delete the test user
 	 *
 	 * @param  string $id
 	 * @return void
 	 */
 	public static function deleteTestUser($id)
 	{
-		Kinvey::deleteUserAsAdmin(array(
+		Kinvey::deleteUser(array(
 			'id'	=> $id,
 			'hard'	=> 'true',
+			'authMode' => 'admin',
 		));
 	}
+
+	/**
+	 * Create a test entity.
+	 *
+	 * @return array
+	 */
+	public static function createTestEntity()
+	{
+		return Kinvey::createEntity(array(
+			'collection' => 'test',
+			'authMode' => 'admin',
+			'data' => array(
+				'foo' => 'bar',
+			),
+		));
+	}
+
+	/**
+	 * Delete the test collection.
+	 *
+	 * @param  string $id
+	 * @return void
+	 */
+	public static function deleteTestCollection()
+	{
+		$response = Kinvey::deleteCollection(array(
+			'collectionName' => 'test',
+			'authMode' => 'admin',
+		));
+	}
+
+
 }

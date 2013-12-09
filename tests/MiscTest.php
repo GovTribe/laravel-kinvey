@@ -1,4 +1,6 @@
-<?php
+<?php namespace Govtribe\LaravelKinvey\Tests;
+
+use GovTribe\LaravelKinvey\Facades\Kinvey;
 
 class MiscTest extends LaravelKinveyTestCase {
 
@@ -24,7 +26,7 @@ class MiscTest extends LaravelKinveyTestCase {
 	 */
 	public function testPingAuth()
 	{
-		$response = Kinvey::pingAuth();
+		$response = Kinvey::pingAuth(array('authMode' => 'app'));
 
 		$this->assertTrue(is_array($response), 'Response is array');
 		$this->assertArrayHasKey('version', $response, 'Response has version key');
