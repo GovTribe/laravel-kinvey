@@ -1,4 +1,4 @@
-<?php namespace GovTribe\LaravelKinvey\Plugins;
+<?php namespace GovTribe\LaravelKinvey\Client\Plugins;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;

@@ -1,11 +1,11 @@
-<?php namespace GovTribe\LaravelKinvey;
+<?php namespace GovTribe\LaravelKinvey\Client;
 
 use Guzzle\Service\Client;
 use Guzzle\Common\FromConfigInterface;
 use Guzzle\Plugin\Backoff\BackoffPlugin;
-use GovTribe\LaravelKinvey\Plugins\KinveyAuthPlugin;
-use GovTribe\LaravelKinvey\Plugins\KinveyEntityCreateWithIDPlugin;
-use GovTribe\LaravelKinvey\Plugins\KinveyUserQueryPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyAuthPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyEntityCreateWithIDPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyUserQueryPlugin;
 
 class KinveyClient extends Client implements FromConfigInterface {
 
@@ -20,7 +20,7 @@ class KinveyClient extends Client implements FromConfigInterface {
 	 * Static factory method used to turn an array or collection of configuration data into an instantiated object.
 	 *
 	 * @param array|Collection $config Configuration data
-	 * @return GovTribe\LaravelKinvey\KinveyClient
+	 * @return GovTribe\LaravelKinvey\Client\KinveyClient
 	 */
 	public static function factory($config = array())
 	{
@@ -35,9 +35,9 @@ class KinveyClient extends Client implements FromConfigInterface {
 	/**
 	 * Register plugin instances in the client.
 	 *
-	 * @param  GovTribe\LaravelKinvey\KinveyClient
+	 * @param  GovTribe\LaravelKinvey\Client\KinveyClient
 	 * @param  array $plugins
-	 * @return GovTribe\LaravelKinvey\KinveyClient
+	 * @return GovTribe\LaravelKinvey\Client\KinveyClient
 	 */
 	public static function registerPlugins(KinveyClient $client, $plugins = array())
 	{

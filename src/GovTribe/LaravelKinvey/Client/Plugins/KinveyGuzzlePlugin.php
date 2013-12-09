@@ -1,6 +1,6 @@
-<?php namespace GovTribe\LaravelKinvey\Plugins;
+<?php namespace GovTribe\LaravelKinvey\Client\Plugins;
 
-class KinveyGuzzlePlugin {
+abstract class KinveyGuzzlePlugin {
 
 	/**
 	 * Configuration data.

@@ -53,10 +53,10 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 	 */
 	public function buildKinveyAPIClient()
 	{
-		require __DIR__ . '/Service/APIV2Description.php';
-		require __DIR__ . '/Service/Builder.php';
+		require __DIR__ . '/Client/Service/APIV2Description.php';
+		require __DIR__ . '/Client/Service/ServiceBuilder.php';
 
-		$client = ServiceBuilder::factory($builder)->get('KinveyClient');
+		$client = ServiceBuilder::factory($serviceBuilder)->get('KinveyClient');
 		$client->setDescription(ServiceDescription::factory($APIV2Description));
 
 		return $client;

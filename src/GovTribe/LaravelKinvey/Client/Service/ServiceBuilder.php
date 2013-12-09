@@ -1,5 +1,5 @@
 <?php
-$builder = array(
+$serviceBuilder = array(
 
 	/*
 	| -----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ $builder = array(
 		),
 		'KinveyClient' => array(
 			'extends' => 'abstract_client',
-			'class'   => 'GovTribe\LaravelKinvey\KinveyClient',
+			'class'   => 'GovTribe\LaravelKinvey\Client\KinveyClient',
 		),
 	),
 
