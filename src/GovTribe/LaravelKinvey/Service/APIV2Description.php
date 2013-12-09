@@ -10,6 +10,8 @@ $APIV2Description = array(
 	'name' => 'Kinvey REST API',
 	'apiVersion' => '2',
 	'operations' => array(
+
+		// Base operations
 		'authOperation' => array(
 			'parameters' => array(
 				'appKey' => array(
@@ -37,39 +39,93 @@ $APIV2Description = array(
 					'type' => 'string',
 					'description' => 'Session token',
 				),
+				'authMode' => array(
+					'type' => 'string',
+					'description' => 'Authentication mode',
+					'required' => true,
+					'default'  => 'app'
+				),
 			),
 		),
+		'entityOperation' => array(
+			'extends' => 'authOperation',
+			'uri' => '/appdata/{appKey}/{collection}/{id}',
+			'parameters' => array(
+				'collection' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Collection name',
+					'required' => true,
+				),
+			),
+		),
+		'query' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Querying',
+			'httpMethod' => 'GET',
+			'parameters' => array(
+				'query' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Query',
+					'required' => false,
+					'default' => array(),
+					'filters' => array(
+						'json_encode',
+					),
+				),
+				'limit' => array(
+					'location' => 'query',
+					'type' => 'integer',
+					'description' => 'Limit the results returned',
+					'required' => false,
+				),
+				'sort' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Sort the returned results',
+					'required' => false,
+					'filters' => array(
+						'json_encode',
+					),
+				),
+				'fields' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Limit the returned fields.',
+					'required' => false,
+					'filters' => array(
+						array(
+							'method' => 'implode',
+							'args' => array(
+								',', '@value'
+							),
+						),
+					),
+				),
+			),
+		),
+
+		// Handshake
 		'pingAuth' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/getting-started#handshake',
 			'httpMethod' => 'GET',
 			'uri' => '/appdata/{appKey}',
-			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'app'
-				),
-			),
 		),
 		'pingAnon' => array(
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/getting-started#handshake',
 			'httpMethod' => 'GET',
 			'uri' => '/appdata/',
 		),
-		'signUp' => array(
+
+		// User
+		'createUser' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#signup',
 			'httpMethod' => 'POST',
 			'uri' => '/user/{appKey}/',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'app'
-				),
 				'data' => array(
 					'location' => 'body',
 					'type' => 'array',
@@ -86,14 +142,9 @@ $APIV2Description = array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#retrieve',
 			'httpMethod' => 'GET',
+			'responseClass' => 'GovTribe\LaravelKinvey\Eloquent\User',
 			'uri' => '/user/{appKey}/{id}',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'user'
-				),
 				'id' => array(
 					'location' => 'uri',
 					'type' => 'string',
@@ -102,29 +153,12 @@ $APIV2Description = array(
 				),
 			),
 		),
-		'retrieveUserAsAdmin' => array(
-			'extends' => 'retrieveUser',
-			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'admin'
-				),
-			),
-		),
 		'updateUser' => array(
 			'extends' => 'authOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#signup',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#update',
 			'httpMethod' => 'PUT',
 			'uri' => '/user/{appKey}/{id}',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'user'
-				),
 				'id' => array(
 					'location' => 'uri',
 					'type' => 'string',
@@ -143,34 +177,22 @@ $APIV2Description = array(
 				),
 			),
 		),
-		'updateUserAsAdmin' => array(
-			'extends' => 'updateUser',
-			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'admin'
-				),
-			),
-		),
 		'deleteUser' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#delete',
 			'httpMethod' => 'DELETE',
 			'uri' => '/user/{appKey}/{id}',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'user'
-				),
 				'id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'User id',
 					'required' => true,
+				),
+				'hard' => array(
+					'location' => 'query',
+					'type' => 'string',
+					'default' => 'false',
 				),
 				'contentType' => array(
 					'location' => 'header',
@@ -181,34 +203,12 @@ $APIV2Description = array(
 				),
 			),
 		),
-		'deleteUserAsAdmin' => array(
-			'extends' => 'deleteUser',
-			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'admin'
-				),
-				'hard' => array(
-					'location' => 'query',
-					'type' => 'string',
-					'default' => 'false',
-				),
-			),
-		),
 		'login' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#login',
 			'httpMethod' => 'POST',
 			'uri' => '/user/{appKey}/login',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => true,
-					'default' => 'app'
-				),
 				'data' => array(
 					'location' => 'body',
 					'type' => 'array',
@@ -227,12 +227,6 @@ $APIV2Description = array(
 			'httpMethod' => 'POST',
 			'uri' => '/user/{appKey}/_logout',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
-					'static' => false,
-					'default' => 'session'
-				),
 				'contentType' => array(
 					'location' => 'header',
 					'type' => 'string',
@@ -247,14 +241,108 @@ $APIV2Description = array(
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#login',
 			'httpMethod' => 'GET',
 			'uri' => '/user/{appKey}/_me',
+		),
+
+		//Entities
+		'createEntity' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#create',
+			'httpMethod' => 'POST',
 			'parameters' => array(
-				'authMode' => array(
-					'type' => 'string',
-					'description' => 'Authentication mode',
+				'data' => array(
+					'location' => 'body',
+					'type' => 'array',
+					'description' => 'Request body',
 					'required' => true,
-					'default' => 'session'
+					'sentAs' => 'body',
+					'filters' => array(
+						'json_encode',
+					),
+				),
+				'id' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Entity ID',
+					'required' => false,
 				),
 			),
 		),
+		'updateEntity' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Saving',
+			'httpMethod' => 'PUT',
+			'parameters' => array(
+				'data' => array(
+					'location' => 'body',
+					'type' => 'array',
+					'description' => 'Request body',
+					'required' => true,
+					'sentAs' => 'body',
+					'filters' => array(
+						'json_encode',
+					),
+				),
+				'id' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Entity ID',
+					'required' => true,
+				),
+			),
+		),
+		'retrieveEntity' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Fetching',
+			'httpMethod' => 'GET',
+			'parameters' => array(
+				'id' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Entity ID',
+					'required' => true,
+				),
+			),
+		),
+		'deleteEntity' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Deleting',
+			'httpMethod' => 'DELETE',
+			'parameters' => array(
+				'id' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Entity ID',
+					'required' => true,
+				),
+				'contentType' => array(
+					'location' => 'header',
+					'type' => 'string',
+					'sentAs' => 'Content-Type',
+					'default' => 'application/x-www-form-urlencoded',
+					'required' => true,
+				),
+			),
+		),
+		'deleteCollection' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#deletecollection',
+			'httpMethod' => 'POST',
+			'uri' => '/rpc/{appKey}/remove-collection',
+			'parameters' => array(
+				'X-Kinvey-Delete-Entire-Collection' => array(
+					'location' => 'header',
+					'type' => 'string',
+					'default' => 'true',
+					'required' => true,
+				),
+				'collectionName' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Name of the collection to delete',
+					'required' => true,
+				),
+			),
+		),
+
 	),
 );

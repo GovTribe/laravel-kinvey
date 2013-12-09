@@ -3,9 +3,17 @@
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;
 use Guzzle\Service\Description\Parameter;
+use Guzzle\Service\Exception\ValidationException;
 
 class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInterface
 {
+
+	/**
+	 * Authentication modes
+	 *
+	 * @var array
+	 */
+	public $authModes = array('user', 'session', 'app', 'admin');
 
 	/**
 	 * Return the array of subscribed events.
@@ -33,16 +41,24 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 			// Inject the Kinvey app key.
 			$command['appKey'] = $this->config['appKey'];
 
+			if(!$command['authMode']) throw new ValidationException('authMode is required');
+			if(!in_array($command['authMode'], $this->authModes)) throw new ValidationException('Invalid authMode : ' . $command['authMode']);
+
 			// Based on the 'authMode', get the correct credentials.
 			switch ($command['authMode'])
 			{
 				case 'user':
+					if(!$command['username']) throw new ValidationException('username is required when using the user authMode');
+					if(!$command['password']) throw new ValidationException('password is required when using the user authMode');
+
 					$username = $command['username'];
 					$password = $command['password'];
 					$scheme = 'Basic';
 					break;
 
 				case 'session':
+					if(!$command['token']) throw new ValidationException('token is required when using the user session');
+
 					$username = $command['token'];
 					$password = null;
 					$scheme = 'Kinvey';

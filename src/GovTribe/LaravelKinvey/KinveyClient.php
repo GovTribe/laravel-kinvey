@@ -4,6 +4,8 @@ use Guzzle\Service\Client;
 use Guzzle\Common\FromConfigInterface;
 use Guzzle\Plugin\Backoff\BackoffPlugin;
 use GovTribe\LaravelKinvey\Plugins\KinveyAuthPlugin;
+use GovTribe\LaravelKinvey\Plugins\KinveyEntityCreateWithIDPlugin;
+use GovTribe\LaravelKinvey\Plugins\KinveyUserQueryPlugin;
 
 class KinveyClient extends Client implements FromConfigInterface {
 
@@ -41,6 +43,8 @@ class KinveyClient extends Client implements FromConfigInterface {
 	{
 		$plugins = array(
 			new KinveyAuthPlugin(self::$config),
+			new KinveyEntityCreateWithIDPlugin(self::$config),
+			new KinveyUserQueryPlugin(self::$config),
 			BackoffPlugin::getExponentialBackoff(),
 		);
 

@@ -4,6 +4,8 @@ use Illuminate\Support\ServiceProvider;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescription;
 use Guzzle\Service\Builder\ServiceBuilder;
+use GovTribe\LaravelKinvey\Eloquent\Model;
+use GovTribe\LaravelKinvey\Eloquent\Connection;
 
 class LaravelKinveyServiceProvider extends ServiceProvider {
 
@@ -22,6 +24,7 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('govtribe/laravel-kinvey');
+		Model::setConnectionResolver($this->app['db']);
 	}
 
 	/**
@@ -35,6 +38,12 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 		{
 			return $this->buildKinveyAPIClient();
 		});
+
+		$this->app['db']->extend('kinvey', function($config)
+		{
+			return new Connection(array());
+		});
+
 	}
 
 	/**
