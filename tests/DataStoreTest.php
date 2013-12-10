@@ -3,7 +3,7 @@
 use GovTribe\LaravelKinvey\Facades\Kinvey;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 
-class EntityTest extends LaravelKinveyTestCase {
+class DataStoreTest extends LaravelKinveyTestCase {
 
 	public function setup()
 	{

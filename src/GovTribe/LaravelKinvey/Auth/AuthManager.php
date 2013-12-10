@@ -1,10 +1,9 @@
 <?php namespace GovTribe\LaravelKinvey\Auth;
 
 use Illuminate\Auth\Guard;
-use Illuminate\Auth\AuthManager as IlluminateAuthManager;
 use GovTribe\LaravelKinvey\Auth\EloquentUserProvider;
 
-class AuthManager extends IlluminateAuthManager {
+class AuthManager extends \Illuminate\Auth\AuthManager {
 
 	/**
 	 * Create an instance of the Eloquent driver.
@@ -14,7 +13,6 @@ class AuthManager extends IlluminateAuthManager {
 	public function createEloquentDriver()
 	{
 		$provider = $this->createEloquentProvider();
-
 		return new Guard($provider, $this->app['session.store']);
 	}
 

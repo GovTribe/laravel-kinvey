@@ -12,6 +12,13 @@ class User extends Model implements UserInterface {
 	protected $collection = 'user';
 
 	/**
+	 * Suspend users instead of deleting them.
+	 *
+	 * @var bool
+	 */
+	protected $softDelete = true;
+
+	/**
 	 * Get the unique identifier for the user.
 	 *
 	 * @return mixed
@@ -30,5 +37,4 @@ class User extends Model implements UserInterface {
 	{
 		d($this->password);
 	}
-
 }

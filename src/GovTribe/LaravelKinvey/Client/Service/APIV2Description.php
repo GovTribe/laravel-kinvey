@@ -119,90 +119,7 @@ $APIV2Description = array(
 			'uri' => '/appdata/',
 		),
 
-		// User
-		'createUser' => array(
-			'extends' => 'authOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#signup',
-			'httpMethod' => 'POST',
-			'uri' => '/user/{appKey}/',
-			'parameters' => array(
-				'data' => array(
-					'location' => 'body',
-					'type' => 'array',
-					'description' => 'Request body',
-					'required' => true,
-					'sentAs' => 'body',
-					'filters' => array(
-						'json_encode',
-					),
-				),
-			),
-		),
-		'retrieveUser' => array(
-			'extends' => 'authOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#retrieve',
-			'httpMethod' => 'GET',
-			'responseClass' => 'GovTribe\LaravelKinvey\Eloquent\User',
-			'uri' => '/user/{appKey}/{id}',
-			'parameters' => array(
-				'id' => array(
-					'location' => 'uri',
-					'type' => 'string',
-					'description' => 'User id',
-					'required' => true,
-				),
-			),
-		),
-		'updateUser' => array(
-			'extends' => 'authOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#update',
-			'httpMethod' => 'PUT',
-			'uri' => '/user/{appKey}/{id}',
-			'parameters' => array(
-				'id' => array(
-					'location' => 'uri',
-					'type' => 'string',
-					'description' => 'User id',
-					'required' => true,
-				),
-				'data' => array(
-					'location' => 'body',
-					'type' => 'array',
-					'description' => 'Request body',
-					'required' => true,
-					'sentAs' => 'body',
-					'filters' => array(
-						'json_encode',
-					),
-				),
-			),
-		),
-		'deleteUser' => array(
-			'extends' => 'authOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#delete',
-			'httpMethod' => 'DELETE',
-			'uri' => '/user/{appKey}/{id}',
-			'parameters' => array(
-				'id' => array(
-					'location' => 'uri',
-					'type' => 'string',
-					'description' => 'User id',
-					'required' => true,
-				),
-				'hard' => array(
-					'location' => 'query',
-					'type' => 'string',
-					'default' => 'false',
-				),
-				'contentType' => array(
-					'location' => 'header',
-					'type' => 'string',
-					'sentAs' => 'Content-Type',
-					'default' => 'application/x-www-form-urlencoded',
-					'required' => true,
-				),
-			),
-		),
+		// Users
 		'login' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#login',
@@ -227,6 +144,27 @@ $APIV2Description = array(
 			'httpMethod' => 'POST',
 			'uri' => '/user/{appKey}/_logout',
 			'parameters' => array(
+				'contentType' => array(
+					'location' => 'header',
+					'type' => 'string',
+					'sentAs' => 'Content-Type',
+					'default' => 'application/x-www-form-urlencoded',
+					'required' => true,
+				),
+			),
+		),
+		'restore' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#delete',
+			'httpMethod' => 'POST',
+			'uri' => '/user/{appKey}/{id}/_restore',
+			'parameters' => array(
+				'id' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Entity ID',
+					'required' => true,
+				),
 				'contentType' => array(
 					'location' => 'header',
 					'type' => 'string',
@@ -320,6 +258,11 @@ $APIV2Description = array(
 					'sentAs' => 'Content-Type',
 					'default' => 'application/x-www-form-urlencoded',
 					'required' => true,
+				),
+				'hard' => array(
+					'location' => 'query',
+					'type' => 'string',
+					'default' => 'false',
 				),
 			),
 		),

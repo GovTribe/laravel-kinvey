@@ -5,6 +5,7 @@ use DateTime;
 use MongoId;
 use MongoDate;
 use Guzzle\Service\Command\CommandInterface;
+use GovTribe\LaravelKinvey\Facades\Kinvey;
 use GovTribe\LaravelKinvey\Eloquent\Builder as Builder;
 use Illuminate\Database\Eloquent\Builder as LaravelBuilder;
 
@@ -32,6 +33,13 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 	protected $primaryKey = '_id';
 
 	/**
+	 * The name of the "deleted at" column.
+	 *
+	 * @var string
+	 */
+	const DELETED_AT = '_kmd.status.val';
+
+	/**
 	 * Kinvey maintains timestamp data.
 	 *
 	 * @var bool
@@ -51,17 +59,25 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 	}
 
 	/**
+	 * Create a new Eloquent model instance.
+	 *
+	 * @param  array  $attributes
+	 * @return void
+	 */
+	public function __construct(array $attributes = array())
+	{
+		$this->table = $this->collection;
+		return parent::__construct($attributes);
+	}
+
+	/**
 	 * Get the format for database stored dates.
 	 *
 	 * @return string
 	 */
 	protected function getDateFormat()
 	{
-		return 'Y-m-d H:i:s';
-		// d($this->getConnection()->getQueryGrammar());
-		// die;
-
-		// return $this->getConnection()->getQueryGrammar()->getDateFormat();
+		return 'c';
 	}
 
 	/**
@@ -82,7 +98,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 	 */
 	protected function performUpdate(\Illuminate\Database\Eloquent\Builder $query)
 	{
-		//Kinvey needs all of the attributes, even on update operations.
+		//Kinvey needs all of the model's attributes for update operations (http://devcenter.kinvey.com/rest/guides/datastore#Saving).
 		$dirty = $this->getAttributes();
 
 		if (count($dirty) > 0)
@@ -104,5 +120,69 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Restore a soft-deleted model instance.
+	 *
+	 * @return bool|null
+	 */
+	public function restore()
+	{
+		if ($this->softDelete)
+		{
+			// If the restoring event does not return false, we will proceed with this
+			// restore operation. Otherwise, we bail out so the developer will stop
+			// the restore totally. We will clear the deleted timestamp and save.
+			if ($this->fireModelEvent('restoring') === false)
+			{
+				return false;
+			}
+
+			// Once we have saved the model, we will fire the "restored" event so this
+			// developer will do anything they need to after a restore operation is
+			// totally finished. Then we will return the result of the save call.
+			$result = $this->save();
+
+			$result = Kinvey::restore(array(
+				'id' => $this->_id,
+				'authMode' => 'admin',
+			));
+
+			$result = $result->getStatusCode() === 204 ? true : false;
+
+			$this->fireModelEvent('restored', false);
+
+			return $result;
+		}
+	}
+
+	/**
+	 * Get the fully qualified "deleted at" column.
+	 *
+	 * @return string
+	 */
+	public function getQualifiedDeletedAtColumn()
+	{
+		return $this->getDeletedAtColumn();
+	}
+
+	/**
+	 * Get the "deleted at" attribute.
+	 *
+	 * @return string
+	 */
+	public function getDeletedAtAttribute()
+	{
+		$meta = $this->getAttribute('_kmd');
+
+		if (isset($meta['status']['val']) && $meta['status']['val'] === 'disabled')
+		{
+			return $meta['status']['lastChange'];
+		}
+		else
+		{
+			return null;
+		}
 	}
 }

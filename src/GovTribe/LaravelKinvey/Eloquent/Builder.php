@@ -6,6 +6,7 @@ use MongoRegex;
 use MongoDate;
 use DateTime;
 use Closure;
+use Log;
 
 class Builder extends \Illuminate\Database\Query\Builder {
 
@@ -14,7 +15,7 @@ class Builder extends \Illuminate\Database\Query\Builder {
      *
      * @var string
      */
-    protected $collectionName;
+    protected $collection;
 
     /**
      * All of the available operators.
@@ -166,9 +167,9 @@ class Builder extends \Illuminate\Database\Query\Builder {
                 $columns[$column] = true;
             }
 
-			// Execute query and get MongoCursor]
+			// Execute the query.
 			$results = Kinvey::query(array(
-				'collection' => $this->collectionName,
+				'collection' => $this->collection,
 				'query' => $wheres,
 				'authMode' => 'admin',
 			));
@@ -334,7 +335,7 @@ class Builder extends \Illuminate\Database\Query\Builder {
 	public function insertGetId(array $values, $sequence = null)
 	{
 		$result = Kinvey::createEntity(array(
-			'collection' => $this->collectionName,
+			'collection' => $this->collection,
 			'authMode' => 'admin',
 			'data' => $values,
 		));
@@ -342,17 +343,17 @@ class Builder extends \Illuminate\Database\Query\Builder {
 		return $result['_id'];
 	}
 
-    /**
-     * Update a record in the database.
-     *
-     * @param  array  $values
-     * @param  array  $options
-     * @return int
-     */
-    public function update(array $values, array $options = array())
-    {
-        return $this->performUpdate(array('$set' => $values), $options);
-    }
+	/**
+	 * Update a record in the database.
+	 *
+	 * @param  array  $values
+	 * @param  array  $options
+	 * @return int
+	 */
+	public function update(array $values, array $options = array())
+	{
+	    return $this->performUpdate($values, $options);
+	}
 
     /**
      * Increment a column's value by a given amount.
@@ -408,42 +409,42 @@ class Builder extends \Illuminate\Database\Query\Builder {
         return count($result) > 0 ? reset($result) : null;
     }
 
-    /**
-     * Delete a record from the database.
-     *
-     * @param  mixed  $id
-     * @return int
-     */
-    public function delete($id = null)
-    {
-        $start = microtime(true);
+	/**
+	 * Delete a record from the database.
+	 *
+	 * @param  mixed  $id
+	 * @return int
+	 */
+	public function delete($id = null)
+	{
+		$wheres = $this->compileWheres();
+		extract($wheres);
 
-        $wheres = $this->compileWheres();
-        $result = $this->collection->remove($wheres);
+		$result = Kinvey::deleteEntity(array(
+			'collection' => $this->collection,
+			'id'	=> $_id,
+			'authMode' => 'admin',
+			'hard' => 'true'
+		));
 
-        // Log query
-        $this->connection->logQuery(
-            $this->from . '.remove(' . json_encode($wheres) . ')',
-            array(), $this->connection->getElapsedTime($start));
+		if ($result->getStatusCode() === 204)
+		{
+			return 1;
+		}
 
-        if (1 == (int) $result['ok'])
-        {
-            return $result['n'];
-        }
-
-        return 0;
-    }
+		return 0;
+	}
 
 	/**
 	 * Set the Kinvey entity collection the query targets.
 	 *
-	 * @param  string  $collectionName
+	 * @param  string  $collection
 	 * @return Builder
 	 */
-	public function from($collectionName)
+	public function from($collection)
 	{
-		$this->collectionName = $collectionName;
-		return parent::from($collectionName);
+		$this->collection = $collection;
+		return parent::from($collection);
 	}
 
     /**
@@ -526,39 +527,50 @@ class Builder extends \Illuminate\Database\Query\Builder {
         return new Builder($this->connection);
     }
 
-    /**
-     * Perform an update query.
-     *
-     * @param  array  $query
-     * @param  array  $options
-     * @return int
-     */
+	/**
+	 * Perform an update query.
+	 *
+	 * @param  array  $query
+	 * @param  array  $options
+	 * @return int
+	 */
 	protected function performUpdate($query, array $options = array())
 	{
 		// Default options
-		$default = array('multiple' => true);
+		$default = array();
 
 		// Merge options and override default options
 		$options = array_merge($default, $options);
 
 		$wheres = $this->compileWheres();
 
-		extract($wheres);
-
-		$data = $query['$set'];
-
 		// Remove Kinvey-specific data.
-		foreach ($data as $key => $value)
+		foreach ($query as $key => $value)
 		{
-			if ($key[0] === '_') unset($data[$key]);
+			if (in_array($key, array('_kmd', '_acl'))) unset($query[$key]);
 		}
 
-		$result = Kinvey::updateEntity(array(
-			'collection' => $this->collectionName,
-			'id' => $_id,
-			'data' => $data,
-			'authMode' => 'admin',
-		));
+		extract($wheres);
+
+		// Perform a Kinvey-style soft delete.
+		if (array_key_exists(Model::DELETED_AT, $query) && $this->collection === 'user')
+		{
+			Kinvey::deleteEntity(array(
+				'collection' => 'user',
+				'id' => $_id,
+				'authMode' => 'admin',
+				'hard' => 'false',
+			));
+		}
+		else
+		{
+			Kinvey::updateEntity(array(
+				'collection' => $this->collection,
+				'id' => $_id,
+				'data' => $query,
+				'authMode' => 'admin',
+			));
+		}
 
 		return true;
 	}
@@ -612,6 +624,7 @@ class Builder extends \Illuminate\Database\Query\Builder {
 
             // Merge compiled where
             $wheres = array_merge_recursive($wheres, $compiled);
+
         }
 
         return $wheres;

@@ -45,9 +45,9 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 			if(!in_array($command['authMode'], $this->authModes)) throw new ValidationException('Invalid authMode : ' . $command['authMode']);
 
 			// Based on the 'authMode', get the correct credentials.
-			switch ($command['authMode'])
+			switch (true)
 			{
-				case 'user':
+				case ($command['authMode'] === 'user'):
 					if(!$command['username']) throw new ValidationException('username is required when using the user authMode');
 					if(!$command['password']) throw new ValidationException('password is required when using the user authMode');
 
@@ -56,7 +56,7 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 					$scheme = 'Basic';
 					break;
 
-				case 'session':
+				case ($command['authMode'] === 'session'):
 					if(!$command['token']) throw new ValidationException('token is required when using the user session');
 
 					$username = $command['token'];
@@ -64,13 +64,14 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 					$scheme = 'Kinvey';
 					break;
 
-				case 'app':
+				case ($command->getOperation()->getName() === 'createEntity' && $command['collection'] === 'user'):
+				case ($command['authMode'] === 'app'):
 					$username = $this->config['appKey'];
 					$password = $this->config['appSecret'];
 					$scheme = 'Basic';
 					break;
 
-				case 'admin':
+				case ($command['authMode'] === 'admin'):
 					$username = $this->config['appKey'];
 					$password = $this->config['masterSecret'];
 					$scheme = 'Basic';

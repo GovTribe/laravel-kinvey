@@ -12,7 +12,10 @@ abstract class LaravelKinveyTestCase extends TestCase {
 	 */
 	protected function getPackageProviders()
 	{
-		return array('GovTribe\LaravelKinvey\LaravelKinveyServiceProvider');
+		return array(
+			'GovTribe\LaravelKinvey\LaravelKinveyServiceProvider',
+			'GovTribe\LaravelKinvey\LaravelKinveyAuthServiceProvider',
+		);
 	}
 
 	/**
@@ -37,46 +40,19 @@ abstract class LaravelKinveyTestCase extends TestCase {
 		parent::setup();
 
 		extract(include __DIR__.'/TestConfig.php');
-		$this->app['config']->set('laravel-kinvey::appName', $appName);
-		$this->app['config']->set('laravel-kinvey::baseURL', $hostEndpoint);
-		$this->app['config']->set('laravel-kinvey::appKey', $appKey);
-		$this->app['config']->set('laravel-kinvey::appSecret', $appSecret);
-		$this->app['config']->set('laravel-kinvey::masterSecret', $masterSecret);
-		$this->app['config']->set('laravel-kinvey::version', $version);
-	}
 
-	/**
-	 * Create a test user.
-	 *
-	 * @return array
-	 */
-	public static function createTestUser()
-	{
-		return Kinvey::createUser(
-			array(
-				'data' => array(
-					'username'	=> 'test.guy@foo.com',
-					'first_name'=> 'Test',
-					'last_name' => 'Guy',
-					'password' 	=> str_random(8),
-				)
-			)
-		);
-	}
+		// Kinvey client configuration.
+		$this->app['config']->set('kinvey::appName', $appName);
+		$this->app['config']->set('kinvey::baseURL', $hostEndpoint);
+		$this->app['config']->set('kinvey::appKey', $appKey);
+		$this->app['config']->set('kinvey::appSecret', $appSecret);
+		$this->app['config']->set('kinvey::masterSecret', $masterSecret);
+		$this->app['config']->set('kinvey::version', $version);
 
-	/**
-	 * Delete the test user
-	 *
-	 * @param  string $id
-	 * @return void
-	 */
-	public static function deleteTestUser($id)
-	{
-		Kinvey::deleteUser(array(
-			'id'	=> $id,
-			'hard'	=> 'true',
-			'authMode' => 'admin',
-		));
+		// Eloquent user model.
+		$authConfig = $this->app['config']['auth'];
+		$authConfig['model'] = 'GovTribe\LaravelKinvey\Eloquent\User';
+		$this->app['config']->set('auth', $authConfig);
 	}
 
 	/**

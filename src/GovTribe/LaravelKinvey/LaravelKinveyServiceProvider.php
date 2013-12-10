@@ -23,8 +23,9 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('govtribe/laravel-kinvey');
+		$this->package('govtribe/laravel-kinvey', 'kinvey');
 		Model::setConnectionResolver($this->app['db']);
+		$this->app['config']->set('database.connections.kinvey', array('driver' => 'kinvey'));
 	}
 
 	/**
@@ -43,7 +44,6 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 		{
 			return new Connection(array());
 		});
-
 	}
 
 	/**
