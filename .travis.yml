@@ -2,8 +2,7 @@ language: php
 
 php:
   - 5.4
-  - 5.5
-
+  
 env:
   global:
     - secure: RAGFum6F/yXPnbBNSdS4lzqKR+uvg4lXhsWTQPhwJIG+hYO5AECGyIf9oi1RKbAxSslAEOvmM+dXC5WFSki057BOzszRG9ZgtfCkk8PfMutZFyOz8lppRO2llfl0+aZ2+zDRQXFRZueNYunTzPLLqS5nx0wsYs2LWxr4/2gwZ/Q=
