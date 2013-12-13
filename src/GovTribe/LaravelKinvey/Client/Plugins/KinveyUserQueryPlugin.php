@@ -21,8 +21,7 @@ class KinveyUserQueryPlugin extends KinveyGuzzlePlugin implements EventSubscribe
 
 	/**
 	 * If the query is targets the users collection,
-	 * rewrite the URI. If the operation creates a user,
-	 * set the authMode to 'app'.
+	 * rewrite the URI.
 	 *
 	 * @param  Guzzle\Common\Event
 	 * @return void
