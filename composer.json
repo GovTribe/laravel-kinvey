@@ -12,18 +12,15 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.0.x",
-        "guzzle/guzzle": "~3.7",
-        "jenssegers/mongodb": "*"
+        "guzzle/guzzle": "~3.8"
     },
     "require-dev": {
-        "orchestra/testbench": "2.0.*",
-        "mockery/mockery": "dev-master@dev"
+        "orchestra/testbench": "2.1.*"
     },
     "autoload": {
         "classmap": [
             "src/migrations",
-            "tests/"
+            "tests"
         ],
         "psr-0": {
             "GovTribe\\LaravelKinvey": "src/"

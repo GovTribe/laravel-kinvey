@@ -49,59 +49,13 @@ $APIV2Description = array(
 		),
 		'entityOperation' => array(
 			'extends' => 'authOperation',
-			'uri' => '/appdata/{appKey}/{collection}/{id}',
+			'uri' => '/appdata/{appKey}/{collection}/{_id}',
 			'parameters' => array(
 				'collection' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Collection name',
 					'required' => true,
-				),
-			),
-		),
-		'query' => array(
-			'extends' => 'entityOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Querying',
-			'httpMethod' => 'GET',
-			'parameters' => array(
-				'query' => array(
-					'location' => 'query',
-					'type' => 'array',
-					'description' => 'Query',
-					'required' => false,
-					'default' => array(),
-					'filters' => array(
-						'json_encode',
-					),
-				),
-				'limit' => array(
-					'location' => 'query',
-					'type' => 'integer',
-					'description' => 'Limit the results returned',
-					'required' => false,
-				),
-				'sort' => array(
-					'location' => 'query',
-					'type' => 'array',
-					'description' => 'Sort the returned results',
-					'required' => false,
-					'filters' => array(
-						'json_encode',
-					),
-				),
-				'fields' => array(
-					'location' => 'query',
-					'type' => 'array',
-					'description' => 'Limit the returned fields.',
-					'required' => false,
-					'filters' => array(
-						array(
-							'method' => 'implode',
-							'args' => array(
-								',', '@value'
-							),
-						),
-					),
 				),
 			),
 		),
@@ -157,9 +111,9 @@ $APIV2Description = array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#delete',
 			'httpMethod' => 'POST',
-			'uri' => '/user/{appKey}/{id}/_restore',
+			'uri' => '/user/{appKey}/{_id}/_restore',
 			'parameters' => array(
-				'id' => array(
+				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Entity ID',
@@ -180,6 +134,22 @@ $APIV2Description = array(
 			'httpMethod' => 'GET',
 			'uri' => '/user/{appKey}/_me',
 		),
+		'createGroup' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#usergroupscreate',
+			'httpMethod' => 'POST',
+			'uri' => '/group/{appKey}/',
+			'parameters' => array(
+				'group' => array(
+					'location' => 'json',
+					'type' => 'object',
+					'instanceOf' => 'KinveyUserGroup',
+					'description' => 'Group Object',
+					'required' => true,
+				),
+			),
+
+		),
 
 		//Entities
 		'createEntity' => array(
@@ -197,7 +167,7 @@ $APIV2Description = array(
 						'json_encode',
 					),
 				),
-				'id' => array(
+				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Entity ID',
@@ -220,12 +190,23 @@ $APIV2Description = array(
 						'json_encode',
 					),
 				),
-				'id' => array(
+				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Entity ID',
-					'required' => true,
+					'required' => false,
 				),
+				'query' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Query',
+					'required' => false,
+					'default' => array(),
+					'filters' => array(
+						'json_encode',
+					),
+				),
+
 			),
 		),
 		'retrieveEntity' => array(
@@ -233,7 +214,7 @@ $APIV2Description = array(
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Fetching',
 			'httpMethod' => 'GET',
 			'parameters' => array(
-				'id' => array(
+				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Entity ID',
@@ -246,7 +227,7 @@ $APIV2Description = array(
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Deleting',
 			'httpMethod' => 'DELETE',
 			'parameters' => array(
-				'id' => array(
+				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Entity ID',
@@ -278,14 +259,66 @@ $APIV2Description = array(
 					'default' => 'true',
 					'required' => true,
 				),
-				'collectionName' => array(
+				'collection' => array(
 					'location' => 'json',
 					'type' => 'string',
 					'description' => 'Name of the collection to delete',
 					'required' => true,
+					'sentAs' => 'collectionName',
 				),
 			),
 		),
-
+		'query' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Querying',
+			'httpMethod' => 'GET',
+			'parameters' => array(
+				'query' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Query',
+					'required' => false,
+					'default' => array(),
+					'filters' => array(
+						'json_encode',
+					),
+				),
+				'limit' => array(
+					'location' => 'query',
+					'type' => 'integer',
+					'description' => 'Limit the results returned',
+					'required' => false,
+				),
+				'skip' => array(
+					'location' => 'query',
+					'type' => 'integer',
+					'description' => 'Skip a number of results',
+					'required' => false,
+				),
+				'sort' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Sort the returned results',
+					'required' => false,
+					'filters' => array(
+						'json_encode',
+					),
+				),
+				'fields' => array(
+					'location' => 'query',
+					'type' => 'array',
+					'description' => 'Limit the returned fields.',
+					'required' => false,
+					'filters' => array(
+						array(
+							'method' => 'implode',
+							'args' => array(
+								',', '@value'
+							),
+						),
+					),
+				),
+			),
+		),
 	),
 );

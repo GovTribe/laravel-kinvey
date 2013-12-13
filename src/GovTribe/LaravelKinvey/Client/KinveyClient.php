@@ -3,9 +3,13 @@
 use Guzzle\Service\Client;
 use Guzzle\Common\FromConfigInterface;
 use Guzzle\Plugin\Backoff\BackoffPlugin;
+use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseExceptionFactory;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyAuthPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyEntityCreateWithIDPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyUserQueryPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyFileQueryPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyExceptionPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyFileMetadataPlugin;
 
 class KinveyClient extends Client implements FromConfigInterface {
 
@@ -45,6 +49,9 @@ class KinveyClient extends Client implements FromConfigInterface {
 			new KinveyAuthPlugin(self::$config),
 			new KinveyEntityCreateWithIDPlugin(self::$config),
 			new KinveyUserQueryPlugin(self::$config),
+			new KinveyFileQueryPlugin(self::$config),
+			new KinveyFileMetadataPlugin(self::$config),
+			new KinveyExceptionPlugin(self::$config, new KinveyResponseExceptionFactory()),
 			BackoffPlugin::getExponentialBackoff(),
 		);
 

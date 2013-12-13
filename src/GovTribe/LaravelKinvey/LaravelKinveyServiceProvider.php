@@ -6,6 +6,7 @@ use Guzzle\Service\Description\ServiceDescription;
 use Guzzle\Service\Builder\ServiceBuilder;
 use GovTribe\LaravelKinvey\Eloquent\Model;
 use GovTribe\LaravelKinvey\Eloquent\Connection;
+use Event;
 
 class LaravelKinveyServiceProvider extends ServiceProvider {
 
@@ -24,8 +25,12 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('govtribe/laravel-kinvey', 'kinvey');
-		Model::setConnectionResolver($this->app['db']);
 		$this->app['config']->set('database.connections.kinvey', array('driver' => 'kinvey'));
+
+		Model::setConnectionResolver($this->app['db']);
+		Model::setEventDispatcher($this->app['events']);
+
+		require __DIR__ . '/Events.php';
 	}
 
 	/**
@@ -42,7 +47,7 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 
 		$this->app['db']->extend('kinvey', function($config)
 		{
-			return new Connection(array());
+			return new Connection($this->app['kinvey']);
 		});
 	}
 
