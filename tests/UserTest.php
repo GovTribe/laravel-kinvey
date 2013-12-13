@@ -24,84 +24,22 @@ class UserTest extends LaravelKinveyTestCase {
 	 */
 	public function tearDown()
 	{
-		User::withTrashed()->where('_id', $this->testUser->_id)->first()->forceDelete();
+		$user = User::withTrashed()->where('_id', $this->testUser->_id)->first()->forceDelete();
 		$this->testUser = array();
 	}
 
 	/**
-	 * Login user.
+	 * Insert user.
 	 *
 	 * @return void
 	 */
-	public function testKinveyLogin()
+	public function testInsertUser()
 	{
-		$userFromCredentials = Kinvey::login(array(
-			'data' => array(
-				'username'  => $this->testUser['username'],
-				'password'  => $this->testUser['password'],
-			)
-		));
-
-		$this->assertTrue(is_array($userFromCredentials), 'User retrieved is array');
-
-		$userFromToken = Kinvey::me(array(
-			'token' => $userFromCredentials['_kmd']['authtoken'],
-			'authMode' 	=> 'session',
-
-		));
-
-		$this->assertTrue(is_array($userFromToken), 'User retrieved is array');
-	}
-
-	/**
-	 * Logout user.
-	 *
-	 * @return void
-	 */
-	public function testKinveyLogout()
-	{
-		$userFromCredentials = Kinvey::login(array(
-			'data' => array(
-				'username'  => $this->testUser['username'],
-				'password'  => $this->testUser['password'],
-			)
-		));
-
-		$response = Kinvey::logout(array(
-			'token' => $userFromCredentials['_kmd']['authtoken'],
-			'authMode' 	=> 'session',
-		));
-
-		$this->assertEquals(204, $response->getStatusCode(), 'Logout OK');
-	}
-
-	/**
-	 * Test Laravel auth.
-	 *
-	 * @return void
-	 */
-	public function testLaravelAuth()
-	{
-		if (Auth::attempt(array('username' => $this->testUser['username'], 'password' => $this->testUser['password'])))
-		{
-			$this->assertTrue(true, 'User is authenticated');
-		}
-		else
-		{
-			$this->assertTrue(false, 'User is not authenticated');
-		}
-
-		Auth::logout();
-
-		if (Auth::check())
-		{
-			$this->assertTrue(true, 'User is logged out');
-		}
-		else
-		{
-			$this->assertTrue(false, 'User is not logged out');
-		}
-
+		$this->assertEquals(true, $this->testUser->exists, 'Exists boolean is true');
+		$this->assertTrue(isset($this->testUser->_id), 'User object has _id property');
+		$this->assertNotEquals('', (string) $this->testUser->_id, '_id property is not empty');
+		$this->assertNotEquals(0, strlen((string) $this->testUser->_id), '_id property is not empty');
+		$this->assertInstanceOf('Carbon\Carbon', $this->testUser->created_at);
 	}
 
 	/**
@@ -109,7 +47,7 @@ class UserTest extends LaravelKinveyTestCase {
 	 *
 	 * @return void
 	 */
-	public function testRetrievUser()
+	public function testRetrieveUser()
 	{
 		$user = User::find($this->testUser->_id);
 		$this->assertInstanceOf('GovTribe\LaravelKinvey\Eloquent\User', $user, 'User retrieved is instance of GovTribe\LaravelKinvey\Eloquent\User');
@@ -142,28 +80,11 @@ class UserTest extends LaravelKinveyTestCase {
 
 		$suspendedUser = User::find($this->testUser->_id);
 		$this->assertEquals(null, $suspendedUser, 'User is suspended');
+		$this->assertEquals(false, $this->testUser->exists, 'Exists boolean is false');
 
 		User::onlyTrashed()->where('_id', $this->testUser->_id)->first()->restore();
 
 		$unSuspendedUser = User::find($this->testUser->_id);
 		$this->assertInstanceOf('GovTribe\LaravelKinvey\Eloquent\User', $this->testUser, 'User is not suspended');
-	}
-
-	/**
-	 * Create a test user.
-	 *
-	 * @return GovTribe\LaravelKinvey\Eloquent\User
-	 */
-	public static function createTestUser()
-	{
-		$user = new User();
-		$user->setRawAttributes(array(
-			'username'	=> 'test.guy@foo.com',
-			'first_name'=> 'Test',
-			'last_name' => 'Guy',
-			'password' 	=> str_random(8),
-		));
-		$user->save();
-		return $user;
 	}
 }
