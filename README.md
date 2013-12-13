@@ -30,6 +30,7 @@ $ php artisan config:publish govtribe/laravel-kinvey
 ## Configure
 You'll now have a blank configuration file under app/config/packages/govtribe/laravel-kinvey:
 ```php
+
 return array(
 
 	/*
