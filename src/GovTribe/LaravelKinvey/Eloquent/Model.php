@@ -123,41 +123,6 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 	}
 
 	/**
-	 * Restore a soft-deleted model instance.
-	 *
-	 * @return bool|null
-	 */
-	public function restore()
-	{
-		if ($this->softDelete)
-		{
-			// If the restoring event does not return false, we will proceed with this
-			// restore operation. Otherwise, we bail out so the developer will stop
-			// the restore totally. We will clear the deleted timestamp and save.
-			if ($this->fireModelEvent('restoring') === false)
-			{
-				return false;
-			}
-
-			// Once we have saved the model, we will fire the "restored" event so this
-			// developer will do anything they need to after a restore operation is
-			// totally finished. Then we will return the result of the save call.
-			$result = $this->save();
-
-			$result = Kinvey::restore(array(
-				'id' => $this->_id,
-				'authMode' => 'admin',
-			));
-
-			$result = $result->getStatusCode() === 204 ? true : false;
-
-			$this->fireModelEvent('restored', false);
-
-			return $result;
-		}
-	}
-
-	/**
 	 * Get the fully qualified "deleted at" column.
 	 *
 	 * @return string
@@ -168,21 +133,45 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 	}
 
 	/**
-	 * Get the "deleted at" attribute.
+	 * Run the increment or decrement method on the model.
+	 *
+	 * @param  string  $column
+	 * @param  int     $amount
+	 * @param  string  $method
+	 * @return int
+	 */
+	protected function incrementOrDecrement($column, $amount, $method)
+	{
+		$attributes = $this->getAttributes();
+
+		if (!isset($attributes[$column])) $attributes[$column] = 0;
+
+		$attributes[$column] = $method === 'increment' ? $attributes[$column] + $amount : $attributes[$column] - $amount;
+
+		$this->setRawAttributes($attributes);
+
+		return $this->save();
+	}
+
+	/**
+	 * Get the model's created_at attribute
 	 *
 	 * @return string
 	 */
-	public function getDeletedAtAttribute()
+	public function getCreatedAtAttribute()
 	{
-		$meta = $this->getAttribute('_kmd');
+		if (!isset($this->attributes['_kmd'])) return new Carbon;
+		return new Carbon($this->attributes['_kmd']['ect']);
+	}
 
-		if (isset($meta['status']['val']) && $meta['status']['val'] === 'disabled')
-		{
-			return $meta['status']['lastChange'];
-		}
-		else
-		{
-			return null;
-		}
+	/**
+	 * Get the model's updated_at attribute
+	 *
+	 * @return string
+	 */
+	public function getUpdatedAtAttribute()
+	{
+		if (!isset($this->attributes['_kmd'])) return new Carbon;
+		return new Carbon($this->attributes['_kmd']['lmt']);
 	}
 }

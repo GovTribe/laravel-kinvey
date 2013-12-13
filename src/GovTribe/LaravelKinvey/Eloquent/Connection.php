@@ -1,174 +1,79 @@
-<?php namespace GovTribe\LaravelKinvey\Eloquent;
+<?php
+namespace GovTribe\LaravelKinvey\Eloquent;
 
-use GovTribe\LaravelKinvey\Facades\Kinvey;
+use GovTribe\LaravelKinvey\Client\KinveyClient;
+use Guzzle\Service\Command\OperationCommand;
 
-class Connection extends \Illuminate\Database\Connection {
+class Connection extends \Illuminate\Database\Connection
+{
 
-    /**
-     * The MongoDB database handler.
-     *
-     * @var resource
-     */
-    protected $db;
+	/**
+	 * The MongoDB database handler.
+	 *
+	 * @var resource
+	 */
+	protected $db;
 
-    /**
-     * The MongoClient connection handler.
-     *
-     * @var resource
-     */
-    protected $connection;
+	/**
+	 * The MongoClient connection handler.
+	 *
+	 * @var resource
+	 */
+	protected $connection;
 
-    /**
-     * Create a new database connection instance.
-     *
-     * @param  array   $config
-     * @return void
-     */
-    public function __construct(array $config)
-    {
-    }
+	/**
+	 * The Kinvey client.
+	 *
+	 * @var object
+	 */
+	protected $kinvey;
 
-    /**
-     * Begin a fluent query against a database collection.
-     *
-     * @param  string  $collection
-     * @return QueryBuilder
-     */
-    public function collection($collection)
-    {
-        $query = new QueryBuilder($this);
-        return $query->from($collection);
-    }
+	/**
+	 * Create a new database connection instance.
+	 *
+	 * @param  KinveyClient $kinvey
+	 * @return void
+	 */
+	public function __construct(KinveyClient $kinvey)
+	{
+		$this->kinvey = $kinvey;
+		$this->disableQueryLog();
+	}
 
-    /**
-     * Begin a fluent query against a database collection.
-     *
-     * @param  string  $table
-     * @return QueryBuilder
-     */
-    public function table($table)
-    {
-        return $this->collection($table);
-    }
+	/**
+	 * Access the raw Kinvey client.
+	 *
+	 * @return KinveyClient
+	 */
+	public function getKinvey()
+	{
+		return $this->kinvey;
+	}
 
-    /**
-     * Get a MongoDB collection.
-     *
-     * @param  string   $name
-     * @return MongoDB
-     */
-    public function getCollection($name)
-    {
+	/**
+	 * Begin a fluent query against a database collection.
+	 *
+	 * @param  string  $collection
+	 * @return QueryBuilder
+	 */
+	public function collection($collection)
+	{
+		$query = new Builder($this);
+		return $query->from($collection);
+	}
 
-        return $this->db->{$name};
-    }
-
-    /**
-     * Get a schema builder instance for the connection.
-     *
-     * @return Schema\Builder
-     */
-    public function getSchemaBuilder()
-    {
-        return new Schema\Builder($this);
-    }
-
-    /**
-     * Get the MongoDB database object.
-     *
-     * @return  MongoDB
-     */
-    public function getMongoDB()
-    {
-        return $this->db;
-    }
-
-    /**
-     * return MongoClient object
-     *
-     * @return MongoClient
-     */
-    public function getMongoClient()
-    {
-        return $this->connection;
-    }
-
-    /**
-     * Create a new MongoClient connection.
-     *
-     * @param  string  $dsn
-     * @param  array   $config
-     * @param  array   $options
-     * @return MongoClient
-     */
-    protected function createConnection($dsn, array $config, array $options)
-    {
-        // Add credentials as options, this makes sure the connection will not fail if
-        // the username or password contains strange characters.
-        if (isset($config['username']) && $config['username'])
-        {
-            $options['username'] = $config['username'];
-        }
-
-        if (isset($config['password']) && $config['password'])
-        {
-            $options['password'] = $config['password'];
-        }
-
-        return new MongoClient($dsn, $options);
-    }
-
-    /**
-     * Create a DSN string from a configuration.
-     *
-     * @param  array   $config
-     * @return string
-     */
-    protected function getDsn(array $config)
-    {
-        // First we will create the basic DSN setup as well as the port if it is in
-        // in the configuration options. This will give us the basic DSN we will
-        // need to establish the MongoClient and return them back for use.
-        extract($config);
-
-        // Treat host option as array of hosts
-        $hosts = is_array($config['host']) ? $config['host'] : array($config['host']);
-
-        // Add ports to hosts
-        foreach ($hosts as &$host)
-        {
-            if (isset($config['port']))
-            {
-                $host = "{$host}:{$port}";
-            }
-        }
-
-        // The database name needs to be in the connection string, otherwise it will
-        // authenticate to the admin database, which may result in permission errors.
-        return "mongodb://" . implode(',', $hosts) . "/{$database}";
-    }
-
-    /**
-     * Get the elapsed time since a given starting point.
-     *
-     * @param  int    $start
-     * @return float
-     */
-    public function getElapsedTime($start)
-    {
-        return parent::getElapsedTime($start);
-    }
-
-    /**
-     * Dynamically pass methods to the connection.
-     *
-     * @param  string  $method
-     * @param  array   $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return call_user_func_array(array($this->db, $method), $parameters);
-    }
-
+	/**
+	 * Dynamically pass methods to the connection.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters)
+	{
+		return call_user_func_array(array(
+			$this->kinvey,
+			$method,
+		), $parameters);
+	}
 }

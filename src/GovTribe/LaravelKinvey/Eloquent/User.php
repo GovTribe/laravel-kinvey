@@ -34,7 +34,5 @@ class User extends Model implements UserInterface {
 	 * @return string
 	 */
 	public function getAuthPassword()
-	{
-		d($this->password);
-	}
+	{}
 }
