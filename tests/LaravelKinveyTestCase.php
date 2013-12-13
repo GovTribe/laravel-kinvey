@@ -40,37 +40,29 @@ abstract class LaravelKinveyTestCase extends TestCase {
 	{
 		parent::setup();
 
-		extract(include __DIR__.'/TestConfig.php');
+		if (getenv("TRAVIS"))
+		{
+			$appName = getenv("KINVEY_APP_NAME");
+			$appKey = getenv("KINVEY_APP_KEY");
+			$appSecret = getenv("KINVEY_APP_SECRET");
+			$masterSecret = getenv("KINVEY_MASTER_SECRET");
+		}
+		else
+		{
+			extract(include __DIR__.'/TestConfig.php');
+		}
 
 		// Kinvey client configuration.
 		$this->app['config']->set('kinvey::appName', $appName);
-		$this->app['config']->set('kinvey::baseURL', $hostEndpoint);
 		$this->app['config']->set('kinvey::appKey', $appKey);
 		$this->app['config']->set('kinvey::appSecret', $appSecret);
 		$this->app['config']->set('kinvey::masterSecret', $masterSecret);
-		$this->app['config']->set('kinvey::version', $version);
+		$this->app['config']->set('kinvey::version', 2);
+		$this->app['config']->set('kinvey::baseURL', 'https://baas.kinvey.com/');
 
 		// Eloquent user model.
 		$authConfig = $this->app['config']['auth'];
 		$authConfig['model'] = 'GovTribe\LaravelKinvey\Eloquent\User';
 		$this->app['config']->set('auth', $authConfig);
-	}
-
-	/**
-	 * Create a test user.
-	 *
-	 * @return GovTribe\LaravelKinvey\Eloquent\User
-	 */
-	public static function createTestUser()
-	{
-		$user = new User();
-		$user->setRawAttributes(array(
-			'username'	=> 'test.guy@foo.com',
-			'first_name'=> 'Test',
-			'last_name' => 'Guy',
-			'password' 	=> str_random(8),
-		));
-		$user->save();
-		return $user;
 	}
 }

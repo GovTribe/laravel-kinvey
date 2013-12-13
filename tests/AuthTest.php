@@ -14,7 +14,7 @@ class AuthTest extends LaravelKinveyTestCase {
 	public function setup()
 	{
 		parent::setup();
-		$this->testUser = self::createTestUser();
+		$this->testUser = UserTest::createTestUser();
 	}
 
 	/**

@@ -87,4 +87,22 @@ class UserTest extends LaravelKinveyTestCase {
 		$unSuspendedUser = User::find($this->testUser->_id);
 		$this->assertInstanceOf('GovTribe\LaravelKinvey\Eloquent\User', $this->testUser, 'User is not suspended');
 	}
+
+	/**
+	 * Create a test user.
+	 *
+	 * @return GovTribe\LaravelKinvey\Eloquent\User
+	 */
+	public static function createTestUser()
+	{
+		$user = new User();
+		$user->setRawAttributes(array(
+			'username'	=> 'test.guy@foo.com',
+			'first_name'=> 'Test',
+			'last_name' => 'Guy',
+			'password' 	=> str_random(8),
+		));
+		$user->save();
+		return $user;
+	}
 }

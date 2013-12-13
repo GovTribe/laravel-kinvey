@@ -17,6 +17,7 @@ class KinveyFile {
 	 * Create a new model instance from a command.
 	 *
 	 * @param CommandInterface
+	 * @return string
 	 */
 	public static function fromCommand(CommandInterface $command)
 	{

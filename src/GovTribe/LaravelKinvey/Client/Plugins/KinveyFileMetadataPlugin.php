@@ -58,7 +58,7 @@ class KinveyFileMetadataPlugin extends KinveyGuzzlePlugin implements EventSubscr
 			'name' => '_public',
 			'location' => 'json',
 			'type' => 'boolean',
-			'default' => !isset($data['_public']) ? false : $data['_public'],
+			'default' => isset($data['_public']) ? $data['_public'] : false,
 		)));
 
 		$operation->addParam(new Parameter(array(

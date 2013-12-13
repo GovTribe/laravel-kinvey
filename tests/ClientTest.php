@@ -2,6 +2,8 @@
 
 use GovTribe\LaravelKinvey\Facades\Kinvey;
 use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException;
+use Guzzle\Http\Exception\ClientErrorResponseException;
+use Guzzle\Http\Client;
 
 class ClientTest extends LaravelKinveyTestCase {
 
@@ -124,7 +126,7 @@ class ClientTest extends LaravelKinveyTestCase {
 	}
 
 	/**
-	 * Retrieve entity.
+	 * Retrieve Entity.
 	 *
 	 * @return void
 	 */
@@ -212,46 +214,165 @@ class ClientTest extends LaravelKinveyTestCase {
 	}
 
 	/**
-	 * Upload file.
+	 * Create file.
 	 *
 	 * @return void
 	 */
-	public function testUploadFile()
+	public function testCreateFile()
 	{
-		$testEntity = self::createTestEntity();
-
-		// Delete the entity.
-		$command = Kinvey::getCommand('deleteEntity', array(
-			'_id' => $testEntity['_id'],
-			'collection' => 'widgets',
+		$fileID = Kinvey::createEntity(array(
 			'authMode' => 'admin',
+			'data' => array(
+				'path' => __DIR__ . '/image.png',
+			),
+			'collection' => 'files'
 		));
 
-		$response = $command->execute();
-		$this->assertEquals('200', $command->getResponse()->getStatusCode(), 'Got correct status code');
-		$this->assertEquals(array('count' => 1), $response, 'Got correct status code');
+		$this->assertTrue(is_string($fileID), 'Response is string');
+		$this->assertEquals(false, empty($fileID), 'Response is not empty');
 
-		// Try to retrieve the deleted entity.
-		$command = Kinvey::getCommand('retrieveEntity', array(
-			'_id' => $testEntity['_id'],
-			'collection' => 'widgets',
+		Kinvey::deleteEntity(array(
 			'authMode' => 'admin',
+			'_id' => $fileID,
+			'collection' => 'files'
+		));
+	}
+
+	/**
+	 * Retrieve file public.
+	 *
+	 * @return void
+	 */
+	public function testRetrieveFilePublic()
+	{
+		// Public file
+		$publicFileID = Kinvey::createEntity(array(
+			'authMode' => 'admin',
+			'data' => array(
+				'path' => __DIR__ . '/image.png',
+				'_public' => true,
+				'foo' => 'bar',
+				'number' => 42,
+			),
+			'collection' => 'files'
+		));
+
+		$file = Kinvey::retrieveEntity(array(
+			'authMode' => 'admin',
+			'_id' => $publicFileID,
+			'collection' => 'files'
+		));
+
+		$this->assertTrue(is_array($file), 'Response is array');
+
+		$this->assertArrayHasKey('_public', $file);
+		$this->assertEquals(true, $file['_public']);
+
+		$this->assertArrayHasKey('_filename', $file);
+		$this->assertEquals('image.png', $file['_filename']);
+
+		$this->assertArrayHasKey('mimeType', $file);
+		$this->assertEquals('image/png', $file['mimeType']);
+
+		$this->assertArrayHasKey('foo', $file);
+		$this->assertEquals('bar', $file['foo']);
+
+		$this->assertArrayHasKey('number', $file);
+		$this->assertEquals('42', $file['number']);
+
+		$this->assertArrayHasKey('_downloadURL', $file);
+		$this->assertTrue(is_string($file['_downloadURL']));
+
+		$client = new Client();
+		$response = $client->get($file['_downloadURL'])->send();
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals(20376, $response->getHeader('Content-Length')->toArray()[0]);
+
+		Kinvey::deleteEntity(array(
+			'authMode' => 'admin',
+			'_id' => $publicFileID,
+			'collection' => 'files'
+		));
+	}
+
+	/**
+	 * Retrieve file private.
+	 *
+	 * @return void
+	 */
+	public function testRetrieveFilePrivate()
+	{
+		$privateFileID = Kinvey::createEntity(array(
+			'authMode' => 'admin',
+			'data' => array(
+				'path' => __DIR__ . '/image.png',
+				'_public' => false,
+			),
+			'collection' => 'files'
+		));
+
+		$file = Kinvey::retrieveEntity(array(
+			'authMode' => 'admin',
+			'_id' => $privateFileID,
+			'collection' => 'files'
+		));
+
+		$this->assertTrue(is_array($file), 'Response is array');
+		$this->assertArrayHasKey('_public', $file);
+		$this->assertEquals(false, $file['_public']);
+
+		Kinvey::deleteEntity(array(
+			'authMode' => 'admin',
+			'_id' => $privateFileID,
+			'collection' => 'files'
+		));
+	}
+
+	/**
+	 * Delete file.
+	 *
+	 * @return void
+	 */
+	public function testDeleteFile()
+	{
+		$client = new Client();
+
+		$fileID = Kinvey::createEntity(array(
+			'authMode' => 'admin',
+			'data' => array(
+				'path' => __DIR__ . '/image.png',
+				'_public' => false,
+			),
+			'collection' => 'files'
+		));
+
+		$file = Kinvey::retrieveEntity(array(
+			'authMode' => 'admin',
+			'_id' => $fileID,
+			'collection' => 'files'
+		));
+
+		$response = $client->get($file['_downloadURL'])->send();
+		$this->assertEquals(200, $response->getStatusCode());
+
+		Kinvey::deleteEntity(array(
+			'authMode' => 'admin',
+			'_id' => $fileID,
+			'collection' => 'files'
 		));
 
 		$ok = false;
 		try
 		{
-			$command->execute();
+			$client->get($file['_downloadURL'])->send();
 		}
-		catch (KinveyResponseException $e)
+		catch (ClientErrorResponseException $e)
 		{
 			$this->assertEquals('404', $e->getResponse()->getStatusCode(), 'Got correct status code');
 			$ok = true;
 		}
-		$this->assertTrue($ok, 'Entity was deleted');
-		self::deleteTestCollection();
+		$this->assertTrue($ok, 'File was deleted');
 	}
-
 
 	/**
 	 * Create a test entity.
