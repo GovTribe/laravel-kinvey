@@ -23,16 +23,6 @@ class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
 			return new AuthManager($app);
 		});
 
-		Event::listen('auth.login', function($user)
-		{
-			Session::put('kinvey', $user->_kmd['authtoken']);
-		});
-
-		Event::listen('auth.logout', function($user)
-		{
-			Session::forget('kinvey');
-		});
-
 		parent::boot();
 	}
 }
