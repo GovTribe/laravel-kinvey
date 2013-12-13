@@ -7,7 +7,6 @@ before_script:
 - php composer.phar install --dev
 script: phpunit
 env:
-  matrix:
   - secure: RAGFum6F/yXPnbBNSdS4lzqKR+uvg4lXhsWTQPhwJIG+hYO5AECGyIf9oi1RKbAxSslAEOvmM+dXC5WFSki057BOzszRG9ZgtfCkk8PfMutZFyOz8lppRO2llfl0+aZ2+zDRQXFRZueNYunTzPLLqS5nx0wsYs2LWxr4/2gwZ/Q=
   - secure: ZTF0DcZLxcme4okeBz2p6V/EDq2XXRAx/lq1K6C3aWOy5DgP4uGH8QfFFoxEQQDSmRSpMfYqzAPg2bO18A4a66WLejeKk5dOBX/sKDt+Nugi5h4RdgGq2RNlCeuDdFlKA+nanRdNvCVKK1CIQorZUzlqNmFl2vbP+hnYGrqBdlg=
   - secure: Rry8rpIrNBLL6Hqx0FDxCaIxVmWVO2wlOk2ArrgjaA6EzTuzh9ynjMq7nEvWmnYwyBLSCEUoNEeIXTdjVZFxfQPKDDZhzVfrGiJErPfpfnw/6p0s/QR0UUNQCVxQqQ8T1qJ91tubpDHUZhSBQs0ErR8sEh8gT25/1LG3wlPxKhg=
