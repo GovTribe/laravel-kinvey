@@ -57,8 +57,6 @@ abstract class LaravelKinveyTestCase extends TestCase {
 		$this->app['config']->set('kinvey::appKey', $appKey);
 		$this->app['config']->set('kinvey::appSecret', $appSecret);
 		$this->app['config']->set('kinvey::masterSecret', $masterSecret);
-		$this->app['config']->set('kinvey::version', 2);
-		$this->app['config']->set('kinvey::baseURL', 'https://baas.kinvey.com/');
 
 		// Eloquent user model.
 		$authConfig = $this->app['config']['auth'];
