@@ -39,16 +39,6 @@ class User extends Model implements UserInterface, RemindableInterface {
 		return $this->password;
 	}
 
-    /**
-     * Get the unique identifier for the user.
-     *
-     * @return mixed
-     */
-    public function getAuthIdentifier()
-    {
-        return $this->getKey();
-    }
-
 	/**
 	 * Get the e-mail address where password reminders are sent.
 	 *
