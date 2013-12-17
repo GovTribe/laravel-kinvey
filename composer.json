@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "guzzle/guzzle": "~3.8"
+        "guzzle/guzzle": "~3.8",
+        "jenssegers/mongodb": "*"
     },
     "require-dev": {
         "orchestra/testbench": "2.1.*"
@@ -25,6 +26,5 @@
         "psr-0": {
             "GovTribe\\LaravelKinvey": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }

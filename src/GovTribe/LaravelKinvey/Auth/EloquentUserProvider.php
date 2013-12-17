@@ -5,7 +5,8 @@ use Illuminate\Auth\UserProviderInterface;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\EloquentUserProvider as IlluminateEloquentUserProvider;
 use Guzzle\Http\Exception\ClientErrorResponseException;
-use GovTribe\LaravelKinvey\Eloquent\User;
+use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException;
+use GovTribe\LaravelKinvey\Database\Eloquent\User;
 use GovTribe\LaravelKinvey\Facades\Kinvey;
 
 class EloquentUserProvider extends IlluminateEloquentUserProvider {
@@ -21,10 +22,10 @@ class EloquentUserProvider extends IlluminateEloquentUserProvider {
 	{
 		try
 		{
-			$result = Kinvey::login(array('data' => $credentials));
+			$result = Kinvey::login($credentials);
 			$user->_kmd = $result['_kmd'];
 		}
-		catch (ClientErrorResponseException $e)
+		catch (KinveyResponseException $e)
 		{
 			if ($e->getResponse()->getStatusCode() === 401)
 			{
@@ -37,5 +38,20 @@ class EloquentUserProvider extends IlluminateEloquentUserProvider {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Retrieve a user by the given credentials.
+	 *
+	 * @param  array  $credentials
+	 * @return \Illuminate\Auth\UserInterface|null
+	 */
+	public function retrieveByCredentials(array $credentials)
+	{
+		Kinvey::setAuthMode('admin');
+		$result = parent::retrieveByCredentials($credentials);
+		Kinvey::setAuthMode('app');
+
+		return $result;
 	}
 }

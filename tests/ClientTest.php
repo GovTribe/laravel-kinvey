@@ -50,10 +50,8 @@ class ClientTest extends LaravelKinveyTestCase {
 		$testUser = self::createTestUser();
 
 		$userFromCredentials = Kinvey::login(array(
-			'data' => array(
-				'username'  => $testUser['username'],
-				'password'  => $testUser['password'],
-			)
+			'username'  => $testUser['username'],
+			'password'  => $testUser['password'],
 		));
 		$this->assertTrue(is_array($userFromCredentials), 'User retrieved is array');
 
@@ -160,8 +158,7 @@ class ClientTest extends LaravelKinveyTestCase {
 			'_id' => $testEntity['_id'],
 			'collection' => 'widgets',
 			'authMode' => 'admin',
-			'data' => $testEntity + array('new_key' => 'new_value'),
-		));
+		) + $testEntity + array('new_key' => 'new_value'));
 
 		$response = $command->execute();
 		$this->assertEquals('200', $command->getResponse()->getStatusCode(), 'Got correct status code');
@@ -222,9 +219,7 @@ class ClientTest extends LaravelKinveyTestCase {
 	{
 		$fileID = Kinvey::createEntity(array(
 			'authMode' => 'admin',
-			'data' => array(
-				'path' => __DIR__ . '/image.png',
-			),
+			'path' => __DIR__ . '/image.png',
 			'collection' => 'files'
 		));
 
@@ -248,12 +243,10 @@ class ClientTest extends LaravelKinveyTestCase {
 		// Public file
 		$publicFileID = Kinvey::createEntity(array(
 			'authMode' => 'admin',
-			'data' => array(
-				'path' => __DIR__ . '/image.png',
-				'_public' => true,
-				'foo' => 'bar',
-				'number' => 42,
-			),
+			'path' => __DIR__ . '/image.png',
+			'_public' => true,
+			'foo' => 'bar',
+			'number' => 42,
 			'collection' => 'files'
 		));
 
@@ -286,7 +279,6 @@ class ClientTest extends LaravelKinveyTestCase {
 		$client = new Client();
 		$response = $client->get($file['_downloadURL'])->send();
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals(20376, $response->getHeader('Content-Length')->toArray()[0]);
 
 		Kinvey::deleteEntity(array(
 			'authMode' => 'admin',
@@ -304,10 +296,8 @@ class ClientTest extends LaravelKinveyTestCase {
 	{
 		$privateFileID = Kinvey::createEntity(array(
 			'authMode' => 'admin',
-			'data' => array(
-				'path' => __DIR__ . '/image.png',
-				'_public' => false,
-			),
+			'path' => __DIR__ . '/image.png',
+			'_public' => false,
 			'collection' => 'files'
 		));
 
@@ -339,10 +329,8 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		$fileID = Kinvey::createEntity(array(
 			'authMode' => 'admin',
-			'data' => array(
-				'path' => __DIR__ . '/image.png',
-				'_public' => false,
-			),
+			'path' => __DIR__ . '/image.png',
+			'_public' => false,
 			'collection' => 'files'
 		));
 
@@ -384,9 +372,7 @@ class ClientTest extends LaravelKinveyTestCase {
 		return Kinvey::createEntity(array(
 			'collection' => 'widgets',
 			'authMode' => 'admin',
-			'data' => array(
-				'foo' => 'bar',
-			),
+			'foo' => 'bar',
 		));
 	}
 
@@ -399,12 +385,10 @@ class ClientTest extends LaravelKinveyTestCase {
 	{
 		return Kinvey::createEntity(array(
 			'collection' => 'user',
-			'data' => array(
-				'username'	=> 'test.guy@foo.com',
-				'first_name'=> 'Test',
-				'last_name' => 'Guy',
-				'password' 	=> str_random(8),
-			)
+			'username'	=> 'test.guy@foo.com',
+			'first_name'=> 'Test',
+			'last_name' => 'Guy',
+			'password' 	=> str_random(8),
 		));
 	}
 

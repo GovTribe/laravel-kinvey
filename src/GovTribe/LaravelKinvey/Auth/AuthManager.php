@@ -24,7 +24,6 @@ class AuthManager extends \Illuminate\Auth\AuthManager {
 	protected function createEloquentProvider()
 	{
 		$model = $this->app['config']['auth.model'];
-
 		return new EloquentUserProvider($this->app['hash'], $model);
 	}
 }

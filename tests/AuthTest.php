@@ -1,7 +1,7 @@
 <?php namespace Govtribe\LaravelKinvey\Tests;
 
 use GovTribe\LaravelKinvey\Facades\Kinvey;
-use GovTribe\LaravelKinvey\Eloquent\User;
+use GovTribe\LaravelKinvey\Database\Eloquent\User;
 use Illuminate\Support\Facades\Auth;
 
 class AuthTest extends LaravelKinveyTestCase {
@@ -24,7 +24,10 @@ class AuthTest extends LaravelKinveyTestCase {
 	 */
 	public function tearDown()
 	{
+		Kinvey::setAuthMode('admin');
 		$user = User::withTrashed()->where('_id', $this->testUser->_id)->first()->forceDelete();
+		Kinvey::setAuthMode('app');
+
 		$this->testUser = array();
 	}
 

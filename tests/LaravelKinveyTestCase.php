@@ -1,7 +1,7 @@
 <?php namespace Govtribe\LaravelKinvey\Tests;
 
 use GovTribe\LaravelKinvey\Facades\Kinvey;
-use GovTribe\LaravelKinvey\Eloquent\User;
+use GovTribe\LaravelKinvey\Database\Eloquent\User;
 use Orchestra\Testbench\TestCase;
 
 abstract class LaravelKinveyTestCase extends TestCase {
@@ -60,7 +60,13 @@ abstract class LaravelKinveyTestCase extends TestCase {
 
 		// Eloquent user model.
 		$authConfig = $this->app['config']['auth'];
-		$authConfig['model'] = 'GovTribe\LaravelKinvey\Eloquent\User';
+		$authConfig['model'] = 'GovTribe\LaravelKinvey\Database\Eloquent\User';
 		$this->app['config']->set('auth', $authConfig);
+
+		// Default database
+		$this->app['config']->set('database.default', 'kinvey');
+
+		// Set the auth mode to admin.
+		Kinvey::setAuthMode('admin');
 	}
 }

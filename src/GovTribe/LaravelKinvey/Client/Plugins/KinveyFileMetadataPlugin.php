@@ -42,30 +42,28 @@ class KinveyFileMetadataPlugin extends KinveyGuzzlePlugin implements EventSubscr
 		if ($command->getName() !== 'createEntity') return;
 		if ($command['collection'] !== 'files') return;
 
-		$data = $command['data'];
-
-		$file = $file = new File($data['path']);
+		$file = new File($command['path']);
 
 		$operation->setResponseClass('GovTribe\LaravelKinvey\Client\KinveyFile');
 
 		$operation->addParam(new Parameter(array(
 			'name' => 'path',
 			'type' => 'string',
-			'default' => $data['path'],
+			'default' => $command['path'],
 		)));
 
 		$operation->addParam(new Parameter(array(
 			'name' => '_public',
 			'location' => 'json',
 			'type' => 'boolean',
-			'default' => isset($data['_public']) ? $data['_public'] : false,
+			'default' => isset($command['_public']) ? $command['_public'] : false,
 		)));
 
 		$operation->addParam(new Parameter(array(
 			'name' => '_filename',
 			'location' => 'json',
 			'type' => 'string',
-			'default' => !isset($data['_filename']) ? $file->getBaseName() : $data['_filename'],
+			'default' => !isset($command['_filename']) ? $file->getBaseName() : $command['_filename'],
 		)));
 
 		$operation->addParam(new Parameter(array(
@@ -81,19 +79,5 @@ class KinveyFileMetadataPlugin extends KinveyGuzzlePlugin implements EventSubscr
 			'type' => 'string',
 			'default' => $file->getMimeType(),
 		)));
-
-		// Add dynamic properties that the user may have passed in
-		// along with the file.
-		foreach ($data as $key => $value)
-		{
-			if (in_array($key, $this->metadata)) continue;
-
-			$operation->addParam(new Parameter(array(
-				'name' => $key,
-				'location' => 'json',
-				'type' => gettype($value),
-				'default' => $value,
-			)));
-		}
 	}
 }

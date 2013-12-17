@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Auth\AuthServiceProvider;
 use GovTribe\LaravelKinvey\Auth\AuthManager;
-use GovTribe\LaravelKinvey\Eloquent\User;
+use GovTribe\LaravelKinvey\Database\Eloquent\User;
 
 class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
 
@@ -20,6 +20,7 @@ class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
 
 		$this->app->bind('auth', function($app)
 		{
+
 			return new AuthManager($app);
 		});
 

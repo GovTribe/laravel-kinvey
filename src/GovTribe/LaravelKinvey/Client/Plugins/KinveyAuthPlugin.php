@@ -41,6 +41,12 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 			// Inject the Kinvey app key.
 			$command['appKey'] = $this->config['appKey'];
 
+			// If the command is missing the 'authMode' key, get it from the client.
+			if (!$command['authMode'] && !is_null($command->getClient()->getAuthMode()))
+			{
+				$command['authMode'] = $command->getClient()->getAuthMode();
+			}
+
 			if(!$command['authMode']) throw new ValidationException('authMode is required');
 			if(!in_array($command['authMode'], $this->authModes)) throw new ValidationException('Invalid authMode : ' . $command['authMode']);
 

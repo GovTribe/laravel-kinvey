@@ -4,8 +4,8 @@ use Illuminate\Support\ServiceProvider;
 use Guzzle\Service\Client;
 use Guzzle\Service\Description\ServiceDescription;
 use Guzzle\Service\Builder\ServiceBuilder;
-use GovTribe\LaravelKinvey\Eloquent\Model;
-use GovTribe\LaravelKinvey\Eloquent\Connection;
+use GovTribe\LaravelKinvey\Database\Eloquent\Model;
+use GovTribe\LaravelKinvey\Database\Connection;
 use Event;
 
 class LaravelKinveyServiceProvider extends ServiceProvider {

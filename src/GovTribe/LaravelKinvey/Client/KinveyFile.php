@@ -1,6 +1,6 @@
 <?php namespace GovTribe\LaravelKinvey\Client;
 
-use Guzzle\Http\Client;
+use Guzzle\Http\StaticClient;
 use Guzzle\Service\Command\CommandInterface;
 use GovTribe\LaravelKinvey\Facades\Kinvey;
 
@@ -23,6 +23,8 @@ class KinveyFile {
 	{
 		$file = new self();
 		$file->setParameters($command->getResponse()->json() + array('path' => $command['path']));
+
+		$file->client = $command->getClient();
 		return $file->finishUpload();
 	}
 
@@ -50,16 +52,27 @@ class KinveyFile {
 	/**
 	 * Perform the file upload operation.
 	 *
-	 * @param array
+	 * @param  null
 	 * @return $fileID
 	 */
-	public function finishUpload(array $requiredHeaders = array())
+	public function finishUpload($requiredHeaders = array())
 	{
 		$parameters = $this->getParameters();
+
 		if (isset($parameters['_requiredHeaders'])) $requiredHeaders = $parameters['_requiredHeaders'];
 
-		$client = new Client();
-		$response = $client->put($parameters['_uploadURL'], $requiredHeaders, fopen($parameters['path'], 'r'))->send();
+		$requiredHeaders = array_merge($requiredHeaders, array('Content-Length' => $parameters['size']));
+		extract(parse_url($parameters['_uploadURL']));
+		$url = $scheme . '://' . $host . $path;
+		parse_str($query, $query);
+
+		$response = StaticClient::put($url, [
+			'headers' => $requiredHeaders,
+			'query'   => $query,
+			'timeout' => 10,
+			'body' => $parameters['path'],
+		]);
+
 		return $parameters['_id'];
 	}
 }

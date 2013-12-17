@@ -2,8 +2,6 @@
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;
-use Guzzle\Service\Description\Parameter;
-use Guzzle\Service\Exception\ValidationException;
 
 class KinveyEntityCreateWithIDPlugin extends KinveyGuzzlePlugin implements EventSubscriberInterface
 {
@@ -19,8 +17,9 @@ class KinveyEntityCreateWithIDPlugin extends KinveyGuzzlePlugin implements Event
 	}
 
 	/**
-	 * If an entity create request is made *with* an ID parameter,
-	 * change the HTTP method from POST to PUT.
+	 * If an entity create request is made with an ID parameter,
+	 * change the HTTP method from POST to PUT. This allows
+	 * adding entities with custom IDs.
 	 *
 	 * @param  Guzzle\Common\Event
 	 * @return void
@@ -30,7 +29,7 @@ class KinveyEntityCreateWithIDPlugin extends KinveyGuzzlePlugin implements Event
 		$command = $event['command'];
 
 		if ($command->getName() !== 'createEntity') return;
-		if (!$command['id']) return;
+		if (!$command['_id']) return;
 
 		$operation = $command->getOperation();
 		$operation->setHttpMethod('PUT');

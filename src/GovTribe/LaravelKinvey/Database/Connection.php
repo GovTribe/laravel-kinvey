@@ -1,19 +1,11 @@
-<?php
-namespace GovTribe\LaravelKinvey\Eloquent;
+<?php namespace GovTribe\LaravelKinvey\Database;
 
-use GovTribe\LaravelKinvey\Client\KinveyClient;
 use Guzzle\Service\Command\OperationCommand;
+use GovTribe\LaravelKinvey\Client\KinveyClient;
+use GovTribe\LaravelKinvey\Database\Eloquent\Builder;
 
 class Connection extends \Illuminate\Database\Connection
 {
-
-	/**
-	 * The MongoDB database handler.
-	 *
-	 * @var resource
-	 */
-	protected $db;
-
 	/**
 	 * The MongoClient connection handler.
 	 *
@@ -26,7 +18,7 @@ class Connection extends \Illuminate\Database\Connection
 	 *
 	 * @var object
 	 */
-	protected $kinvey;
+	protected $db;
 
 	/**
 	 * Create a new database connection instance.
@@ -36,8 +28,7 @@ class Connection extends \Illuminate\Database\Connection
 	 */
 	public function __construct(KinveyClient $kinvey)
 	{
-		$this->kinvey = $kinvey;
-		$this->disableQueryLog();
+		$this->db = $kinvey;
 	}
 
 	/**
@@ -47,7 +38,22 @@ class Connection extends \Illuminate\Database\Connection
 	 */
 	public function getKinvey()
 	{
-		return $this->kinvey;
+		return $this->db;
+	}
+
+	/**
+	 * Get a MongoDB collection.
+	 *
+	 * @param  string   $name
+	 * @return string
+	 */
+	public function getCollection($name)
+	{
+		$instance = clone $this->db;
+
+		$instance->setCollectionName($name);
+
+		return $instance;
 	}
 
 	/**
@@ -63,6 +69,19 @@ class Connection extends \Illuminate\Database\Connection
 	}
 
 	/**
+	 * Log a query in the connection's query log.
+	 *
+	 * @param  string  $query
+	 * @param  array   $bindings
+	 * @param  $time
+	 * @return void
+	 */
+	public function logQuery($query, $bindings, $time = null)
+	{
+
+	}
+
+	/**
 	 * Dynamically pass methods to the connection.
 	 *
 	 * @param  string  $method
@@ -71,9 +90,6 @@ class Connection extends \Illuminate\Database\Connection
 	 */
 	public function __call($method, $parameters)
 	{
-		return call_user_func_array(array(
-			$this->kinvey,
-			$method,
-		), $parameters);
+		return call_user_func_array(array($this->db, $method), $parameters);
 	}
 }

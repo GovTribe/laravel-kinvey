@@ -43,7 +43,6 @@ $APIV2Description = array(
 					'type' => 'string',
 					'description' => 'Authentication mode',
 					'required' => true,
-					'default'  => 'app'
 				),
 			),
 		),
@@ -80,15 +79,17 @@ $APIV2Description = array(
 			'httpMethod' => 'POST',
 			'uri' => '/user/{appKey}/login',
 			'parameters' => array(
-				'data' => array(
-					'location' => 'body',
-					'type' => 'array',
-					'description' => 'Request body',
+				'username' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Username',
 					'required' => true,
-					'sentAs' => 'body',
-					'filters' => array(
-						'json_encode',
-					),
+				),
+				'password' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Password',
+					'required' => true,
 				),
 			),
 		),
@@ -134,62 +135,45 @@ $APIV2Description = array(
 			'httpMethod' => 'GET',
 			'uri' => '/user/{appKey}/_me',
 		),
-		'createGroup' => array(
-			'extends' => 'authOperation',
-			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#usergroupscreate',
-			'httpMethod' => 'POST',
-			'uri' => '/group/{appKey}/',
-			'parameters' => array(
-				'group' => array(
-					'location' => 'json',
-					'type' => 'object',
-					'instanceOf' => 'KinveyUserGroup',
-					'description' => 'Group Object',
-					'required' => true,
-				),
-			),
-
-		),
 
 		//Entities
 		'createEntity' => array(
 			'extends' => 'entityOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#create',
 			'httpMethod' => 'POST',
+			'additionalParameters' => array(
+				'location' => 'json',
+			),
 			'parameters' => array(
-				'data' => array(
-					'location' => 'body',
-					'type' => 'array',
-					'description' => 'Request body',
-					'required' => true,
-					'sentAs' => 'body',
-					'filters' => array(
-						'json_encode',
-					),
-				),
 				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
 					'description' => 'Entity ID',
 					'required' => false,
 				),
+				'username' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Username',
+					'required' => false,
+				),
+				'password' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Password',
+					'required' => false,
+				),
+
 			),
 		),
 		'updateEntity' => array(
 			'extends' => 'entityOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Saving',
 			'httpMethod' => 'PUT',
+			'additionalParameters' => array(
+				'location' => 'json',
+			),
 			'parameters' => array(
-				'data' => array(
-					'location' => 'body',
-					'type' => 'array',
-					'description' => 'Request body',
-					'required' => true,
-					'sentAs' => 'body',
-					'filters' => array(
-						'json_encode',
-					),
-				),
 				'_id' => array(
 					'location' => 'uri',
 					'type' => 'string',
@@ -244,6 +228,18 @@ $APIV2Description = array(
 					'location' => 'query',
 					'type' => 'string',
 					'default' => 'false',
+				),
+			),
+		),
+		'remove' => array(
+			'extends' => 'deleteEntity',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#Deleting',
+			'httpMethod' => 'DELETE',
+			'parameters' => array(
+				'hard' => array(
+					'location' => 'query',
+					'type' => 'string',
+					'default' => 'true',
 				),
 			),
 		),
@@ -319,6 +315,44 @@ $APIV2Description = array(
 					),
 				),
 			),
+		),
+		'group' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#aggregation',
+			'httpMethod' => 'POST',
+			'uri' => '/appdata/{appKey}/{collection}/_group',
+			'parameters' => array(
+				'key' => array(
+					'location' => 'json',
+					'type' => 'array',
+					'description' => 'An object that selects the field to group by',
+					'required' => true,
+				),
+				'initial' => array(
+					'location' => 'json',
+					'type' => 'array',
+					'description' => 'An object containing the initial structure of the document to be returned',
+					'required' => true,
+				),
+				'reduce' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'A JavaScript function that will be used to reduce down the result set',
+					'required' => true,
+				),
+				'condition' => array(
+					'location' => 'json',
+					'type' => 'array',
+					'description' => 'An optional filter applied to the result set before it is fed to the MapReduce operation',
+					'required' => false,
+				),
+			),
+		),
+		'count' => array(
+			'extends' => 'entityOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/datastore#counting',
+			'httpMethod' => 'GET',
+			'uri' => '/appdata/{appKey}/{collection}/_count',
 		),
 	),
 );

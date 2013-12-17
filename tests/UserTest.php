@@ -1,7 +1,7 @@
 <?php namespace Govtribe\LaravelKinvey\Tests;
 
 use GovTribe\LaravelKinvey\Facades\Kinvey;
-use GovTribe\LaravelKinvey\Eloquent\User;
+use GovTribe\LaravelKinvey\Database\Eloquent\User;
 use Illuminate\Support\Facades\Auth;
 
 class UserTest extends LaravelKinveyTestCase {
@@ -29,47 +29,6 @@ class UserTest extends LaravelKinveyTestCase {
 	}
 
 	/**
-	 * Insert user.
-	 *
-	 * @return void
-	 */
-	public function testInsertUser()
-	{
-		$this->assertEquals(true, $this->testUser->exists, 'Exists boolean is true');
-		$this->assertTrue(isset($this->testUser->_id), 'User object has _id property');
-		$this->assertNotEquals('', (string) $this->testUser->_id, '_id property is not empty');
-		$this->assertNotEquals(0, strlen((string) $this->testUser->_id), '_id property is not empty');
-		$this->assertInstanceOf('Carbon\Carbon', $this->testUser->created_at);
-	}
-
-	/**
-	 * Retrieve user.
-	 *
-	 * @return void
-	 */
-	public function testRetrieveUser()
-	{
-		$user = User::find($this->testUser->_id);
-		$this->assertInstanceOf('GovTribe\LaravelKinvey\Eloquent\User', $user, 'User retrieved is instance of GovTribe\LaravelKinvey\Eloquent\User');
-	}
-
-	/**
-	 * Update user.
-	 *
-	 * @return void
-	 */
-	public function testUpdateUser()
-	{
-		$this->testUser->foo = 'bar';
-		$this->testUser->save();
-
-		$updatedAttributes = $this->testUser->getAttributes();
-
-		$this->assertArrayHasKey('foo', $updatedAttributes, 'Updated user has new key');
-		$this->assertEquals('bar', $updatedAttributes['foo'], 'New key has correct value');
-	}
-
-	/**
 	 * Suspend user.
 	 *
 	 * @return void
@@ -85,24 +44,27 @@ class UserTest extends LaravelKinveyTestCase {
 		User::onlyTrashed()->where('_id', $this->testUser->_id)->first()->restore();
 
 		$unSuspendedUser = User::find($this->testUser->_id);
-		$this->assertInstanceOf('GovTribe\LaravelKinvey\Eloquent\User', $this->testUser, 'User is not suspended');
+		$this->assertInstanceOf('GovTribe\LaravelKinvey\Database\Eloquent\User', $this->testUser, 'User is not suspended');
 	}
 
 	/**
 	 * Create a test user.
 	 *
-	 * @return GovTribe\LaravelKinvey\Eloquent\User
+	 * @return GovTribe\LaravelKinvey\Database\Eloquent\User
 	 */
 	public static function createTestUser()
 	{
+		Kinvey::setAuthMode('app');
 		$user = new User();
 		$user->setRawAttributes(array(
 			'username'	=> 'test.guy@foo.com',
 			'first_name'=> 'Test',
 			'last_name' => 'Guy',
 			'password' 	=> str_random(8),
+			'original'  => 'baz'
 		));
 		$user->save();
+		Kinvey::setAuthMode('admin');
 		return $user;
 	}
 }

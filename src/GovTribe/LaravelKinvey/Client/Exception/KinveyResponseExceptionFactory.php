@@ -20,7 +20,7 @@ class KinveyResponseExceptionFactory implements ExceptionFactoryInterface
 		$parts = array(
 			'type' => isset($message['error']) ? $message['error'] : null,
 			'description' => isset($message['description']) ? $message['description'] : null,
-			'request_id' => $response->getHeaders()->get('x-kinvey-request-id')->__toString(),
+			'request_id' => $response->getHeaders()->get('x-kinvey-request-id'),
 			'debug' => isset($message['debug']) && !empty($message['debug']) ? $message['debug'] : null,
 		);
 
