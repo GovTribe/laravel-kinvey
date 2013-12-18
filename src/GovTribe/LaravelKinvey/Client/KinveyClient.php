@@ -17,13 +17,6 @@ use GovTribe\LaravelKinvey\Client\Plugins\KinveyRemoveInternalData;
 class KinveyClient extends Client implements FromConfigInterface {
 
 	/**
-	 * Configuration data.
-	 *
-	 * @var array
-	 */
-	protected static $config;
-
-	/**
 	 * Collection name this client will query.
 	 *
 	 * @var string
@@ -45,10 +38,7 @@ class KinveyClient extends Client implements FromConfigInterface {
 	 */
 	public static function factory($config = array())
 	{
-		self::$config = $config;
-		$config['debug'] = true;
 		$client = new self($config['baseURL'], $config);
-
 		$client->setDefaultOption('headers/Content-Type', 'application/json');
 		$client->setDefaultOption('X-Kinvey-API-Version', 2);
 
@@ -67,14 +57,14 @@ class KinveyClient extends Client implements FromConfigInterface {
 	public static function registerPlugins(KinveyClient $client, $plugins = array())
 	{
 		$plugins = array(
-			new KinveyAuthPlugin(self::$config),
-			new KinveyEntityCreateWithIDPlugin(self::$config),
-			new KinveyCollectionNamePlugin(self::$config),
-			new KinveyFileMetadataPlugin(self::$config),
-			new KinveyEntityPathRewritePlugin(self::$config),
-			new KinveyUserSoftDeletePlugin(self::$config),
-			new KinveyRemoveInternalData(self::$config),
-			new KinveyExceptionPlugin(self::$config, new KinveyResponseExceptionFactory()),
+			new KinveyAuthPlugin(),
+			new KinveyEntityCreateWithIDPlugin(),
+			new KinveyCollectionNamePlugin(),
+			new KinveyFileMetadataPlugin(),
+			new KinveyEntityPathRewritePlugin(),
+			new KinveyUserSoftDeletePlugin(),
+			new KinveyRemoveInternalData(),
+			new KinveyExceptionPlugin(new KinveyResponseExceptionFactory()),
 			BackoffPlugin::getExponentialBackoff(3, array(500, 504)),
 		);
 

@@ -4,6 +4,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;
 use Guzzle\Service\Description\Parameter;
 use Guzzle\Service\Exception\ValidationException;
+use Illuminate\Support\Facades\Session;
 
 class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInterface
 {
@@ -34,12 +35,14 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 	public function beforePrepare(Event $event)
 	{
 		$command = $event['command'];
+		$client = $command->getClient();
+		$config =  $client->getConfig();
 
 		// Check if this command requires authentication.
 		if ($command->getOperation()->hasParam('appKey'))
 		{
 			// Inject the Kinvey app key.
-			$command['appKey'] = $this->config['appKey'];
+			$command['appKey'] = $config->get('appKey');
 
 			// If the command is missing the 'authMode' key, get it from the client.
 			if (!$command['authMode'] && !is_null($command->getClient()->getAuthMode()))
@@ -50,10 +53,13 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 			if(!$command['authMode']) throw new ValidationException('authMode is required');
 			if(!in_array($command['authMode'], $this->authModes)) throw new ValidationException('Invalid authMode : ' . $command['authMode']);
 
-			// Based on the 'authMode', get the correct credentials.
+			// Based on the command's authMode', get the correct credentials.
 			switch (true)
 			{
+
+				// Username and password
 				case ($command['authMode'] === 'user'):
+
 					if(!$command['username']) throw new ValidationException('username is required when using the user authMode');
 					if(!$command['password']) throw new ValidationException('password is required when using the user authMode');
 
@@ -62,24 +68,36 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 					$scheme = 'Basic';
 					break;
 
+				// Session tokens
+				case ($token = Session::get('kinvey')):
 				case ($command['authMode'] === 'session'):
-					if(!$command['token']) throw new ValidationException('token is required when using the user session');
 
-					$username = $command['token'];
+					$token = null;
+
+					if ($command['token']) $token = $command['token'];
+					if (Session::get('kinvey')) $token = Session::get('kinvey');
+
+					if(!$token) throw new ValidationException('token is required when using the the session authMode');
+
+					$username = $token;
 					$password = null;
 					$scheme = 'Kinvey';
 					break;
 
+				// App authentication and user sign-up
 				case ($command->getOperation()->getName() === 'createEntity' && $command['collection'] === 'user'):
 				case ($command['authMode'] === 'app'):
-					$username = $this->config['appKey'];
-					$password = $this->config['appSecret'];
+
+					$username = $config->get('appKey');
+					$password = $config->get('appSecret');
 					$scheme = 'Basic';
 					break;
 
+				// Admin mode
 				case ($command['authMode'] === 'admin'):
-					$username = $this->config['appKey'];
-					$password = $this->config['masterSecret'];
+
+					$username = $config->get('appKey');
+					$password = $config->get('masterSecret');
 					$scheme = 'Basic';
 					break;
 			}

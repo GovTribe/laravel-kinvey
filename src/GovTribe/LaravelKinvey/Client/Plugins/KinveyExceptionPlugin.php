@@ -19,10 +19,9 @@ class KinveyExceptionPlugin extends KinveyGuzzlePlugin implements EventSubscribe
 	 * @param KinveyResponseExceptionFactory
 	 * @return KinveyExceptionPlugin
 	 */
-	public function __construct($config, KinveyResponseExceptionFactory $factory)
+	public function __construct(KinveyResponseExceptionFactory $factory)
 	{
 		$this->factory = $factory;
-		parent::__construct($config);
 	}
 
 	/**

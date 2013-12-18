@@ -6,7 +6,6 @@ use Guzzle\Service\Description\ServiceDescription;
 use Guzzle\Service\Builder\ServiceBuilder;
 use GovTribe\LaravelKinvey\Database\Eloquent\Model;
 use GovTribe\LaravelKinvey\Database\Connection;
-use Event;
 
 class LaravelKinveyServiceProvider extends ServiceProvider {
 
@@ -29,8 +28,6 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 
 		Model::setConnectionResolver($this->app['db']);
 		Model::setEventDispatcher($this->app['events']);
-
-		require __DIR__ . '/Events.php';
 	}
 
 	/**

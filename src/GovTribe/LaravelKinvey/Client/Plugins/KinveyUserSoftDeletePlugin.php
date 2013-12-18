@@ -32,7 +32,7 @@ class KinveyUserSoftDeletePlugin extends KinveyGuzzlePlugin implements EventSubs
 		if ($command->getName() !== 'updateEntity') return;
 		if ($operation->getParam('collection')->getDefault() !== 'user') return;
 
-		// Attempt to get the model's deleted at key from the array of values passed
+		// Attempt to get the model's deleted at value from the array of values passed
 		// to the command.
 		$statusValue = false;
 

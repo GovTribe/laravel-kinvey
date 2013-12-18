@@ -1,10 +1,10 @@
 <?php namespace GovTribe\LaravelKinvey\Client;
 
-use Guzzle\Http\StaticClient;
+use Guzzle\Http\Client;
 use Guzzle\Service\Command\CommandInterface;
 use GovTribe\LaravelKinvey\Facades\Kinvey;
 
-class KinveyFile {
+class KinveyFileResponse {
 
 	/**
 	 * Array of parameters returned from Kinvey.
@@ -16,16 +16,15 @@ class KinveyFile {
 	/**
 	 * Create a new model instance from a command.
 	 *
-	 * @param CommandInterface
-	 * @return string
+	 * @param  CommandInterface
+	 * @return array
 	 */
 	public static function fromCommand(CommandInterface $command)
 	{
 		$file = new self();
 		$file->setParameters($command->getResponse()->json() + array('path' => $command['path']));
-
-		$file->client = $command->getClient();
-		return $file->finishUpload();
+		$file->finishUpload();
+		return $file->getParameters();
 	}
 
 	/**
@@ -41,7 +40,7 @@ class KinveyFile {
 	/**
 	 * Set parameters sent from Kinvey.
 	 *
-	 * @param array
+	 * @param  array
 	 * @return void
 	 */
 	public function setParameters(array $parameters)
@@ -53,7 +52,7 @@ class KinveyFile {
 	 * Perform the file upload operation.
 	 *
 	 * @param  null
-	 * @return $fileID
+	 * @return void
 	 */
 	public function finishUpload($requiredHeaders = array())
 	{
@@ -61,18 +60,11 @@ class KinveyFile {
 
 		if (isset($parameters['_requiredHeaders'])) $requiredHeaders = $parameters['_requiredHeaders'];
 
-		$requiredHeaders = array_merge($requiredHeaders, array('Content-Length' => $parameters['size']));
-		extract(parse_url($parameters['_uploadURL']));
-		$url = $scheme . '://' . $host . $path;
-		parse_str($query, $query);
+		$client = new Client;
+		$request = $client->put($parameters['_uploadURL'], $requiredHeaders, fopen($parameters['path'], 'r'));
+		$response = $request->send();
 
-		$response = StaticClient::put($url, [
-			'headers' => $requiredHeaders,
-			'query'   => $query,
-			'timeout' => 10,
-			'body' => $parameters['path'],
-		]);
-
-		return $parameters['_id'];
+		unset($parameters['path']);
+		$this->setParameters($parameters);
 	}
 }

@@ -217,18 +217,18 @@ class ClientTest extends LaravelKinveyTestCase {
 	 */
 	public function testCreateFile()
 	{
-		$fileID = Kinvey::createEntity(array(
+		$file = Kinvey::createEntity(array(
 			'authMode' => 'admin',
 			'path' => __DIR__ . '/image.png',
 			'collection' => 'files'
 		));
 
-		$this->assertTrue(is_string($fileID), 'Response is string');
-		$this->assertEquals(false, empty($fileID), 'Response is not empty');
+		$this->assertTrue(is_array($file), 'Response is array');
+		$this->assertEquals(false, empty($file), 'Response is not empty');
 
 		Kinvey::deleteEntity(array(
 			'authMode' => 'admin',
-			'_id' => $fileID,
+			'_id' => $file['_id'],
 			'collection' => 'files'
 		));
 	}
@@ -241,7 +241,7 @@ class ClientTest extends LaravelKinveyTestCase {
 	public function testRetrieveFilePublic()
 	{
 		// Public file
-		$publicFileID = Kinvey::createEntity(array(
+		$publicFile = Kinvey::createEntity(array(
 			'authMode' => 'admin',
 			'path' => __DIR__ . '/image.png',
 			'_public' => true,
@@ -252,7 +252,7 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		$file = Kinvey::retrieveEntity(array(
 			'authMode' => 'admin',
-			'_id' => $publicFileID,
+			'_id' => $publicFile['_id'],
 			'collection' => 'files'
 		));
 
@@ -282,7 +282,7 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		Kinvey::deleteEntity(array(
 			'authMode' => 'admin',
-			'_id' => $publicFileID,
+			'_id' => $publicFile['_id'],
 			'collection' => 'files'
 		));
 	}
@@ -294,7 +294,7 @@ class ClientTest extends LaravelKinveyTestCase {
 	 */
 	public function testRetrieveFilePrivate()
 	{
-		$privateFileID = Kinvey::createEntity(array(
+		$privateFile = Kinvey::createEntity(array(
 			'authMode' => 'admin',
 			'path' => __DIR__ . '/image.png',
 			'_public' => false,
@@ -303,7 +303,7 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		$file = Kinvey::retrieveEntity(array(
 			'authMode' => 'admin',
-			'_id' => $privateFileID,
+			'_id' => $privateFile['_id'],
 			'collection' => 'files'
 		));
 
@@ -313,7 +313,7 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		Kinvey::deleteEntity(array(
 			'authMode' => 'admin',
-			'_id' => $privateFileID,
+			'_id' => $privateFile['_id'],
 			'collection' => 'files'
 		));
 	}
@@ -327,7 +327,7 @@ class ClientTest extends LaravelKinveyTestCase {
 	{
 		$client = new Client();
 
-		$fileID = Kinvey::createEntity(array(
+		$file = Kinvey::createEntity(array(
 			'authMode' => 'admin',
 			'path' => __DIR__ . '/image.png',
 			'_public' => false,
@@ -336,7 +336,7 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		$file = Kinvey::retrieveEntity(array(
 			'authMode' => 'admin',
-			'_id' => $fileID,
+			'_id' => $file['_id'],
 			'collection' => 'files'
 		));
 
@@ -345,7 +345,7 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		Kinvey::deleteEntity(array(
 			'authMode' => 'admin',
-			'_id' => $fileID,
+			'_id' => $file['_id'],
 			'collection' => 'files'
 		));
 

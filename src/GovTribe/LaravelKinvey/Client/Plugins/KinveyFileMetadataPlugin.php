@@ -3,22 +3,10 @@
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;
 use Guzzle\Service\Description\Parameter;
-use Guzzle\Service\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\File\File;
 
 class KinveyFileMetadataPlugin extends KinveyGuzzlePlugin implements EventSubscriberInterface
 {
-
-	/**
-	 * File metadata.
-	 *
-	 * @var array
-	 */
-	public $metadata = array(
-		'path', '_public', '_filename',
-		'size', 'mimeType'
-	);
-
 	/**
 	 * Return the array of subscribed events.
 	 *
@@ -39,12 +27,14 @@ class KinveyFileMetadataPlugin extends KinveyGuzzlePlugin implements EventSubscr
 	{
 		$command = $event['command'];
 		$operation = $command->getOperation();
+		$client = $command->getClient();
+
 		if ($command->getName() !== 'createEntity') return;
-		if ($command['collection'] !== 'files') return;
+		if ($command['collection'] !== 'files' && $client->getCollectionName() !== 'files') return;
 
 		$file = new File($command['path']);
 
-		$operation->setResponseClass('GovTribe\LaravelKinvey\Client\KinveyFile');
+		$operation->setResponseClass('GovTribe\LaravelKinvey\Client\KinveyFileResponse');
 
 		$operation->addParam(new Parameter(array(
 			'name' => 'path',
