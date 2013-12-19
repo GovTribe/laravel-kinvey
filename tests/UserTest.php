@@ -57,7 +57,7 @@ class UserTest extends LaravelKinveyTestCase {
 		Kinvey::setAuthMode('app');
 		$user = new User();
 		$user->setRawAttributes(array(
-			'username'	=> 'test.guy@foo.com',
+			'email'	    => 'test@govtribe.com',
 			'first_name'=> 'Test',
 			'last_name' => 'Guy',
 			'password' 	=> str_random(8),

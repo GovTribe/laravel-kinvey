@@ -20,6 +20,22 @@ class User extends Model implements UserInterface, RemindableInterface {
 	protected $softDelete = true;
 
 	/**
+	 * The "booting" method of the model.
+	 *
+	 * @return void
+	 */
+	public static function boot()
+	{
+		parent::boot();
+
+		User::creating(function($user)
+		{
+			if (!$user->email) throw new \Exception('User model must contain a not-null email attribute');
+			if (!$user->username) $user->username = $user->email;
+		});
+	}
+
+	/**
 	 * Get the unique identifier for the user.
 	 *
 	 * @return mixed
@@ -46,6 +62,6 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 */
 	public function getReminderEmail()
 	{
-		return $this->username;
+		return $this->email;
 	}
 }

@@ -43,7 +43,7 @@ class AuthTest extends LaravelKinveyTestCase {
 		{
 			$this->assertTrue(true, 'User is authenticated');
 			$this->assertEquals(Session::get('kinvey'), Auth::user()->_kmd['authtoken'], 'Kinvey auth token is stored in the user session');
-			$this->assertEquals('test.guy@foo.com', Auth::user()->username, 'The correct user was logged in');
+			$this->assertEquals('test@govtribe.com', Auth::user()->username, 'The correct user was logged in');
 		}
 		else
 		{

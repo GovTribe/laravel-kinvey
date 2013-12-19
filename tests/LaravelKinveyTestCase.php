@@ -46,6 +46,7 @@ abstract class LaravelKinveyTestCase extends TestCase {
 			$appKey = getenv("KINVEY_APP_KEY");
 			$appSecret = getenv("KINVEY_APP_SECRET");
 			$masterSecret = getenv("KINVEY_MASTER_SECRET");
+			$testMail = getenv("TEST_MAIL");
 		}
 		else
 		{
@@ -57,6 +58,9 @@ abstract class LaravelKinveyTestCase extends TestCase {
 		$this->app['config']->set('kinvey::appKey', $appKey);
 		$this->app['config']->set('kinvey::appSecret', $appSecret);
 		$this->app['config']->set('kinvey::masterSecret', $masterSecret);
+
+		// Test mail account.
+		$this->app['config']->set('kinvey::testMail', $testMail);
 
 		// Eloquent user model.
 		$authConfig = $this->app['config']['auth'];

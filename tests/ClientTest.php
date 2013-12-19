@@ -4,6 +4,7 @@ use GovTribe\LaravelKinvey\Facades\Kinvey;
 use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use Guzzle\Http\Client;
+use Illuminate\Support\Facades\Config;
 
 class ClientTest extends LaravelKinveyTestCase {
 
@@ -98,6 +99,40 @@ class ClientTest extends LaravelKinveyTestCase {
 		));
 
 		$this->assertEquals('disabled', $suspendedUser['_kmd']['status']['val'], 'User is suspended');
+
+		Kinvey::deleteEntity(array(
+			'collection' => 'user',
+			'_id' => $testUser['_id'],
+			'hard' => 'true',
+			'authMode' => 'admin',
+		));
+	}
+
+	/**
+	 * User password reset.
+	 *
+	 * @return void
+	 */
+	public function testKinveyUserPasswordReset()
+	{
+		$testUser = self::createTestUser();
+
+		Kinvey::resetPassword(array(
+			'_id' => $testUser['_id'],
+			'username' => $testUser['username'],
+		));
+
+		$checkUser = Kinvey::retrieveEntity(array(
+			'_id' => $testUser['_id'],
+			'collection' => 'user',
+			'authMode' => 'admin',
+		));
+
+		$this->assertEquals('InProgress', $checkUser['_kmd']['passwordReset']['status'], 'Password reset in progress');
+
+		$client = new Client();
+		$response = $client->get(self::getPasswordResetURL())->send();
+		$this->assertEquals(200, $response->getStatusCode(), 'Password reset link is valid');
 
 		Kinvey::deleteEntity(array(
 			'collection' => 'user',
@@ -384,11 +419,13 @@ class ClientTest extends LaravelKinveyTestCase {
 	public static function createTestUser()
 	{
 		return Kinvey::createEntity(array(
-			'collection' => 'user',
-			'username'	=> 'test.guy@foo.com',
+			'collection'=> 'user',
+			'email'	    => 'test@govtribe.com',
+			'username'	=> 'test@govtribe.com',
 			'first_name'=> 'Test',
 			'last_name' => 'Guy',
 			'password' 	=> str_random(8),
+			'original'  => 'baz'
 		));
 	}
 
@@ -400,9 +437,37 @@ class ClientTest extends LaravelKinveyTestCase {
 	 */
 	public static function deleteTestCollection()
 	{
-		$response = Kinvey::deleteCollection(array(
+		Kinvey::deleteCollection(array(
 			'collection' => 'widgets',
 			'authMode' => 'admin',
 		));
 	}
+
+	/**
+	 * Get the password reset URL.
+	 *
+	 * @return string
+	 */
+	public static function getPasswordResetURL()
+	{
+		$options = new \ezcMailImapTransportOptions();
+		$options->ssl = true;
+		$imap = new \ezcMailImapTransport( 'imap.gmail.com', null, $options );
+		$imap->authenticate( 'test@govtribe.com', Config::get('kinvey::testMail') );
+		$imap->selectMailbox('Inbox');
+		$set = $imap->searchMailbox( 'FROM "support@kinvey.com"' );
+
+		$parser = new \ezcMailParser();
+		$mail = $parser->parseMail($set);
+
+		preg_match("#https.*#", $mail[0]->generateBody(), $matches);
+		$url = html_entity_decode($matches[0]);
+		$url = mb_substr($url, 0, -1);
+
+		foreach ($set->getMessageNumbers() as $msgNum) $imap->delete($msgNum);
+		$imap->expunge();
+
+		return $url;
+	}
+
 }

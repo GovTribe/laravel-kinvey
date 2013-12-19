@@ -16,7 +16,8 @@
         "jenssegers/mongodb": "*"
     },
     "require-dev": {
-        "orchestra/testbench": "2.1.*"
+        "orchestra/testbench": "2.1.*",
+        "zetacomponents/mail": "dev-master"
     },
     "autoload": {
         "classmap": [

@@ -9,6 +9,7 @@ env:
     - secure: ZTF0DcZLxcme4okeBz2p6V/EDq2XXRAx/lq1K6C3aWOy5DgP4uGH8QfFFoxEQQDSmRSpMfYqzAPg2bO18A4a66WLejeKk5dOBX/sKDt+Nugi5h4RdgGq2RNlCeuDdFlKA+nanRdNvCVKK1CIQorZUzlqNmFl2vbP+hnYGrqBdlg=
     - secure: Rry8rpIrNBLL6Hqx0FDxCaIxVmWVO2wlOk2ArrgjaA6EzTuzh9ynjMq7nEvWmnYwyBLSCEUoNEeIXTdjVZFxfQPKDDZhzVfrGiJErPfpfnw/6p0s/QR0UUNQCVxQqQ8T1qJ91tubpDHUZhSBQs0ErR8sEh8gT25/1LG3wlPxKhg=
     - secure: iq7TMuOPG6xzUYCQGea566tP19bPEVbdy58KgmLr2YqfZOhB3qFDGUQ7w6SJML2q5wFJ0SB/zPZ7cWx/CrkyjG3Yh4rWaBU4AR2AzYWnbD2mTziemKzblVyp+2alSboGxuPxG05+hA3tKoxKG8Ikw09b7kfS9vv83DcUujVY+FQ=
+	- secure: Dd4cGXQqVoGMTOKz1s9DlOxJqx4NUyUnOXfb2ctr8IxGNcRNEpkHozonguTpc7RYQjifzyJ254t6TbZfZy5cv6pnQDXUSgLuu+oc5MSObqccdwuZ+DR8wWC1CF4zSP5W6nADc6vGKePqb7cckwLoY1/5XJdaYhYq/Vax4HbkrR0=
 
 before_script:
   - composer self-update

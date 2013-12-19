@@ -135,6 +135,44 @@ $APIV2Description = array(
 			'httpMethod' => 'GET',
 			'uri' => '/user/{appKey}/_me',
 		),
+		'resetPassword' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#passwordreset',
+			'httpMethod' => 'POST',
+			'uri' => '/rpc/{appKey}/{username}/user-password-reset-initiate',
+			'parameters' => array(
+				'username' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Username or email address',
+					'required' => true,
+				),
+				'body' => array(
+					'location' => 'body',
+					'required' => true,
+					'default' => "{}",
+				),
+			),
+		),
+		'verifyEmail' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#emailverification',
+			'httpMethod' => 'POST',
+			'uri' => '/rpc/{appKey}/{username}/user-email-verification-initiate',
+			'parameters' => array(
+				'username' => array(
+					'location' => 'uri',
+					'type' => 'string',
+					'description' => 'Username or email address',
+					'required' => true,
+				),
+				'body' => array(
+					'location' => 'body',
+					'required' => true,
+					'default' => "{}",
+				),
+			),
+		),
 
 		//Entities
 		'createEntity' => array(
@@ -190,7 +228,6 @@ $APIV2Description = array(
 						'json_encode',
 					),
 				),
-
 			),
 		),
 		'retrieveEntity' => array(
