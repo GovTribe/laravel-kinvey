@@ -116,9 +116,9 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		$this->assertEquals('InProgress', $checkUser['_kmd']['passwordReset']['status'], 'Password reset in progress');
 
-		$client = new Client();
-		$response = $client->get(self::getPasswordResetURL())->send();
-		$this->assertEquals(200, $response->getStatusCode(), 'Password reset link is valid');
+		//$client = new Client();
+		//$response = $client->get(self::getPasswordResetURL())->send();
+		//$this->assertEquals(200, $response->getStatusCode(), 'Password reset link is valid');
 	}
 
 	/**
