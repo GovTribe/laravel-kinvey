@@ -39,5 +39,10 @@ class KinveyEntityPathRewritePlugin extends KinveyGuzzlePlugin implements EventS
 			if (strstr($operation->getURI(), 'files') !== false) return;
 			$operation->setURI('/blob/{appKey}/{_id}');
 		}
+		elseif ($command->offsetGet('collection') === 'group' || $command->getClient()->getCollectionName() === 'group')
+		{
+			if (strstr($operation->getURI(), 'group') !== false) return;
+			$operation->setURI('/group/{appKey}/{_id}');
+		}
 	}
 }

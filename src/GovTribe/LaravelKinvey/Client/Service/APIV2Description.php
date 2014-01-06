@@ -218,6 +218,12 @@ $APIV2Description = array(
 					'description' => 'Entity ID',
 					'required' => false,
 				),
+				'username' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Username',
+					'required' => false,
+				),
 				'query' => array(
 					'location' => 'query',
 					'type' => 'array',

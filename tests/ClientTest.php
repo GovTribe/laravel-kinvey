@@ -67,13 +67,6 @@ class ClientTest extends LaravelKinveyTestCase {
 			'authMode' 	=> 'session',
 		));
 		$this->assertEquals(204, $response->getStatusCode(), 'Logout OK');
-
-		Kinvey::deleteEntity(array(
-			'collection' => 'user',
-			'_id' => $testUser['_id'],
-			'hard' => 'true',
-			'authMode' => 'admin',
-		));
 	}
 
 	/**
@@ -99,13 +92,6 @@ class ClientTest extends LaravelKinveyTestCase {
 		));
 
 		$this->assertEquals('disabled', $suspendedUser['_kmd']['status']['val'], 'User is suspended');
-
-		Kinvey::deleteEntity(array(
-			'collection' => 'user',
-			'_id' => $testUser['_id'],
-			'hard' => 'true',
-			'authMode' => 'admin',
-		));
 	}
 
 	/**
@@ -133,13 +119,6 @@ class ClientTest extends LaravelKinveyTestCase {
 		$client = new Client();
 		$response = $client->get(self::getPasswordResetURL())->send();
 		$this->assertEquals(200, $response->getStatusCode(), 'Password reset link is valid');
-
-		Kinvey::deleteEntity(array(
-			'collection' => 'user',
-			'_id' => $testUser['_id'],
-			'hard' => 'true',
-			'authMode' => 'admin',
-		));
 	}
 
 	/**
@@ -154,8 +133,6 @@ class ClientTest extends LaravelKinveyTestCase {
 		$this->assertTrue(is_array($testEntity), 'Response is array');
 		$this->assertArrayHasKey('foo', $testEntity, 'Response has foo key');
 		$this->assertEquals('bar', $testEntity['foo'], 'foo key is equal to bar');
-
-		self::deleteTestCollection();
 	}
 
 	/**
@@ -176,8 +153,6 @@ class ClientTest extends LaravelKinveyTestCase {
 
 		$response = $command->getResponse();
 		$this->assertEquals('200', $response->getStatusCode(), 'Got correct status code');
-
-		self::deleteTestCollection();
 	}
 
 	/**
@@ -200,8 +175,6 @@ class ClientTest extends LaravelKinveyTestCase {
 		$this->assertTrue(is_array($response), 'Response is array');
 		$this->assertArrayHasKey('new_key', $response, 'Response has new_key key');
 		$this->assertEquals('new_value', $response['new_key'], 'new_key key is equal to new_value');
-
-		self::deleteTestCollection();
 	}
 
 	/**
@@ -230,19 +203,8 @@ class ClientTest extends LaravelKinveyTestCase {
 			'collection' => 'widgets',
 			'authMode' => 'admin',
 		));
-
-		$ok = false;
-		try
-		{
-			$command->execute();
-		}
-		catch (KinveyResponseException $e)
-		{
-			$this->assertEquals('404', $e->getResponse()->getStatusCode(), 'Got correct status code');
-			$ok = true;
-		}
-		$this->assertTrue($ok, 'Entity was deleted');
-		self::deleteTestCollection();
+		$this->setExpectedException('GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException');
+		$command->execute();
 	}
 
 	/**
@@ -384,18 +346,66 @@ class ClientTest extends LaravelKinveyTestCase {
 			'collection' => 'files'
 		));
 
-		$ok = false;
+		$this->setExpectedException('Guzzle\Http\Exception\ClientErrorResponseException');
+
+		$client->get($file['_downloadURL'])->send();
+	}
+
+	/**
+	 * Restrict entity test.
+	 *
+	 * @return void
+	 */
+	public function testRestrictEntity()
+	{
+		$widget = self::createTestEntity();
+		$testUser = self::createTestUser();
+
+		// Login as the test user, attempt to read it.
+		$command = Kinvey::getCommand('retrieveEntity', array(
+			'collection' => 'widgets',
+			'_id' => $widget['_id'],
+			'authMode' => 'user',
+			'username' => $testUser['username'],
+			'password' => $testUser['password'],
+		));
+		$command->execute();
+		$this->assertEquals(200, $command->getResponse()->getStatusCode());
+
+		// Update $widget to make it not globally readable or writable.
+		$widget['_acl'] = array_merge($widget['_acl'], array('gr' => false, 'gw' => false));
+		$widget['authMode'] = 'admin';
+		$widget['collection'] = 'widgets';
+		$widget = Kinvey::updateEntity($widget);
+
+		// Login as the test user, attempt to read it.
+		$this->setExpectedException('GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException');
+		Kinvey::retrieveEntity(array(
+			'collection' => 'widgets',
+			'_id' => $widget['_id'],
+			'authMode' => 'user',
+			'username' => $testUser['username'],
+			'password' => $testUser['password'],
+		));
+	}
+
+	/**
+	 * Tear down the test environment.
+	 *
+	 * @return array
+	 */
+	public function tearDown()
+	{
 		try
 		{
-			$client->get($file['_downloadURL'])->send();
+			self::deleteTestCollection();
 		}
-		catch (ClientErrorResponseException $e)
-		{
-			$this->assertEquals('404', $e->getResponse()->getStatusCode(), 'Got correct status code');
-			$ok = true;
-		}
-		$this->assertTrue($ok, 'File was deleted');
+		catch (KinveyResponseException $e){}
+
+		$users = Kinvey::query(array('collection' => 'user', 'username' => 'test@govtribe.com'));
+		if (!empty($users)) Kinvey::deleteEntity(array('collection' => 'user', '_id' => $users[0]['_id'], 'authMode' => 'admin', 'hard' => 'true'));
 	}
+
 
 	/**
 	 * Create a test entity.
@@ -425,7 +435,25 @@ class ClientTest extends LaravelKinveyTestCase {
 			'first_name'=> 'Test',
 			'last_name' => 'Guy',
 			'password' 	=> str_random(8),
-			'original'  => 'baz'
+			'original'  => 'baz',
+		));
+	}
+
+	/**
+	 * Create a test group.
+	 *
+	 * @return array
+	 */
+	public static function createTestGroup()
+	{
+		Kinvey::createEntity(array(
+			'collection' => 'group',
+			'authMode'	 => 'admin',
+			'_id' => 'limited',
+			'users' => array(
+				'all' => false,
+				'list' => array(),
+			),
 		));
 	}
 
