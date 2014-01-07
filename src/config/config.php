@@ -15,6 +15,7 @@ return array(
 	'appKey' => '',
 	'appSecret' => '',
 	'masterSecret' => '',
+	'defaultAuthMode' => 'app',
 
 	/*
 	| -----------------------------------------------------------------------------

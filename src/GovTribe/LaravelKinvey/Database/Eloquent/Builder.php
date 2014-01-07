@@ -28,6 +28,7 @@ class Builder extends MongoBuilder
 	protected function convertKey($id)
 	{
 		// As Kinvey doesn't use MongoIDs, just return the string id.
+		if ($id instanceof \MongoId) $id = $id->__toString();
 		return $id;
 	}
 

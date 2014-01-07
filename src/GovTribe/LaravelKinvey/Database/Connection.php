@@ -77,9 +77,7 @@ class Connection extends \Illuminate\Database\Connection
 	 * @return void
 	 */
 	public function logQuery($query, $bindings, $time = null)
-	{
-
-	}
+	{}
 
 	/**
 	 * Dynamically pass methods to the connection.

@@ -10,13 +10,13 @@ $serviceBuilder = array(
 	'services' => array(
 		'abstract_client' => array(
 			'params' => array(
-				'appName'		=> $this->app['config']['kinvey::appName'],
-				'baseURL'    	=> $this->app['config']['kinvey::hostEndpoint'],
-				'appKey' 	 	=> $this->app['config']['kinvey::appKey'],
-				'appSecret'	 	=> $this->app['config']['kinvey::appSecret'],
-				'masterSecret'	=> $this->app['config']['kinvey::masterSecret'],
-				'version'		=> $this->app['config']['kinvey::version'],
-
+				'appName'			=> $this->app['config']['kinvey::appName'],
+				'baseURL'    		=> $this->app['config']['kinvey::hostEndpoint'],
+				'appKey' 	 		=> $this->app['config']['kinvey::appKey'],
+				'appSecret'	 		=> $this->app['config']['kinvey::appSecret'],
+				'masterSecret'		=> $this->app['config']['kinvey::masterSecret'],
+				'version'			=> $this->app['config']['kinvey::version'],
+				'defaultAuthMode'	=> $this->app['config']['kinvey::defaultAuthMode'],
 			)
 		),
 		'KinveyClient' => array(

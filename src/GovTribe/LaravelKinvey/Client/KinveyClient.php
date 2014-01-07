@@ -41,6 +41,7 @@ class KinveyClient extends Client implements FromConfigInterface {
 		$client = new self($config['baseURL'], $config);
 		$client->setDefaultOption('headers/Content-Type', 'application/json');
 		$client->setDefaultOption('X-Kinvey-API-Version', 2);
+		$client->setAuthMode($config['defaultAuthMode']);
 
 		$client = self::registerPlugins($client);
 
