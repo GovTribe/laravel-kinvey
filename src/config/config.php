@@ -15,7 +15,6 @@ return array(
 	'appKey' => '',
 	'appSecret' => '',
 	'masterSecret' => '',
-	'defaultAuthMode' => 'app',
 
 	/*
 	| -----------------------------------------------------------------------------
@@ -28,4 +27,17 @@ return array(
 
 	'hostEndpoint' => 'https://baas.kinvey.com/',
 	'version' => 2,
+
+	/*
+	| -----------------------------------------------------------------------------
+	| Settings
+	| -----------------------------------------------------------------------------
+	|
+	| Control the default authentication mode, logging etc.
+	|
+	*/
+
+	'defaultAuthMode' 	=> 'app',
+	'logging'			=> false,
+
 );
