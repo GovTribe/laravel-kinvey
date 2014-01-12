@@ -18,6 +18,7 @@ use GovTribe\LaravelKinvey\Client\Plugins\KinveyFileMetadataPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyEntityPathRewritePlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyUserSoftDeletePlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyRemoveInternalDataPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyInjectEntityIdPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyErrorCodeBackoffStrategy;
 
 class KinveyClient extends Client implements FromConfigInterface {
@@ -71,6 +72,7 @@ class KinveyClient extends Client implements FromConfigInterface {
 			new KinveyEntityPathRewritePlugin(),
 			new KinveyUserSoftDeletePlugin(),
 			new KinveyRemoveInternalDataPlugin(),
+			new KinveyInjectEntityIdPlugin(),
 			new KinveyExceptionPlugin(new KinveyResponseExceptionFactory()),
 			self::getExponentialBackoffPlugin(
 				2,
@@ -153,7 +155,7 @@ class KinveyClient extends Client implements FromConfigInterface {
 	public static function getLogPlugin()
 	{
 		$adapter = new MonologLogAdapter(Log::getMonolog());
-		$format = "{hostname} {req_header_User-Agent} - [{ts}] \"{method} {resource} {protocol}/{version}\" {code} {phrase} time:{total_time} kinveyRID:{res_header_x-kinvey-request-id} ";
+		$format = "[{ts}] \"{method} {resource} {protocol}/{version}\" {code} {phrase} time:{total_time} kinveyRID:{res_header_x-kinvey-request-id} request:{req_body}";
 		$formatter = new MessageFormatter($format);
 
 		return new LogPlugin($adapter, $formatter);
