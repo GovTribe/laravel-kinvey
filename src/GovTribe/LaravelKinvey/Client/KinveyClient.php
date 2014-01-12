@@ -1,9 +1,14 @@
 <?php namespace GovTribe\LaravelKinvey\Client;
 
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use Guzzle\Service\Client;
 use Guzzle\Common\FromConfigInterface;
 use Guzzle\Plugin\Backoff\BackoffPlugin;
+use Guzzle\Plugin\Backoff\TruncatedBackoffStrategy;
+use Guzzle\Plugin\Backoff\ExponentialBackoffStrategy;
+use Guzzle\Log\MonologLogAdapter;
+use Guzzle\Plugin\Log\LogPlugin;
+use Guzzle\Log\MessageFormatter;
 use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseExceptionFactory;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyAuthPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyEntityCreateWithIDPlugin;
@@ -12,7 +17,8 @@ use GovTribe\LaravelKinvey\Client\Plugins\KinveyExceptionPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyFileMetadataPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyEntityPathRewritePlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyUserSoftDeletePlugin;
-use GovTribe\LaravelKinvey\Client\Plugins\KinveyRemoveInternalData;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyRemoveInternalDataPlugin;
+use GovTribe\LaravelKinvey\Client\Plugins\KinveyErrorCodeBackoffStrategy;
 
 class KinveyClient extends Client implements FromConfigInterface {
 
@@ -64,15 +70,17 @@ class KinveyClient extends Client implements FromConfigInterface {
 			new KinveyFileMetadataPlugin(),
 			new KinveyEntityPathRewritePlugin(),
 			new KinveyUserSoftDeletePlugin(),
-			new KinveyRemoveInternalData(),
+			new KinveyRemoveInternalDataPlugin(),
 			new KinveyExceptionPlugin(new KinveyResponseExceptionFactory()),
-			BackoffPlugin::getExponentialBackoff(3, array(500, 504)),
+			self::getExponentialBackoffPlugin(
+				2,
+				array('BLTimeoutError', 'KinveyInternalErrorRetry')
+			)
 		);
 
-		foreach ($plugins as $plugin)
-		{
-			$client->addSubscriber($plugin);
-		}
+		if ($client->getConfig('logging')) $plugins[] = self::getLogPlugin(Log::getMonolog());
+
+		foreach ($plugins as $plugin) $client->addSubscriber($plugin);
 
 		return $client;
 	}
@@ -118,6 +126,39 @@ class KinveyClient extends Client implements FromConfigInterface {
 	{
 		return $this->collection;
 	}
+
+	/**
+	 * Retrieve a truncated exponential backoff plugin that will retry
+	 * requests for certain Kinvey error codes.
+	 *
+	 * @param int   $maxRetries 		Maximum number of retries
+	 * @param array $kinveyErrorCodes 	Kinvey error codes to retry
+	 *
+	 * @return BackoffPlugin
+	 */
+	public static function getExponentialBackoffPlugin($maxRetries = 0, array $kinveyErrorCodes = null)
+	{
+		return new BackoffPlugin(
+			new TruncatedBackoffStrategy($maxRetries,
+				new KinveyErrorCodeBackoffStrategy($kinveyErrorCodes,
+					new ExponentialBackoffStrategy()
+		)));
+	}
+
+	/**
+	 * Get the log plugin.
+	 *
+	 * @return LogPlugin
+	 */
+	public static function getLogPlugin()
+	{
+		$adapter = new MonologLogAdapter(Log::getMonolog());
+		$format = "{hostname} {req_header_User-Agent} - [{ts}] \"{method} {resource} {protocol}/{version}\" {code} {phrase} time:{total_time} kinveyRID:{res_header_x-kinvey-request-id} ";
+		$formatter = new MessageFormatter($format);
+
+		return new LogPlugin($adapter, $formatter);
+	}
+
 
 	/**
 	 * Magic method used to retrieve a command

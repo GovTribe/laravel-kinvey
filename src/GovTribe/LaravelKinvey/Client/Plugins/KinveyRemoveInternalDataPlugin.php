@@ -3,7 +3,7 @@
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Guzzle\Common\Event;
 
-class KinveyRemoveInternalData extends KinveyGuzzlePlugin implements EventSubscriberInterface
+class KinveyRemoveInternalDataPlugin extends KinveyGuzzlePlugin implements EventSubscriberInterface
 {
 	/**
 	 * Return the array of subscribed events.

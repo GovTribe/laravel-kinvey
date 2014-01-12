@@ -17,6 +17,7 @@ $serviceBuilder = array(
 				'masterSecret'		=> $this->app['config']['kinvey::masterSecret'],
 				'version'			=> $this->app['config']['kinvey::version'],
 				'defaultAuthMode'	=> $this->app['config']['kinvey::defaultAuthMode'],
+				'logging'			=> $this->app['config']['kinvey::logging'],
 			)
 		),
 		'KinveyClient' => array(
