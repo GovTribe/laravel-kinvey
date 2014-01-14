@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/GovTribe/laravel-kinvey.png?branch=master)](https://travis-ci.org/GovTribe/laravel-kinvey)
+[![Coverage Status](https://coveralls.io/repos/GovTribe/laravel-kinvey/badge.png?branch=master)](https://coveralls.io/r/GovTribe/laravel-kinvey?branch=master)
+
 # laravel-kinvey
 
 This pacakge provides integration between Kinvey's great backend as a service platform and Laravel 4. It's based on version 2 of the [REST API](http://devcenter.kinvey.com/rest/guides/getting-started).
