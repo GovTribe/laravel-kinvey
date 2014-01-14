@@ -17,7 +17,8 @@
     },
     "require-dev": {
         "orchestra/testbench": "2.1.*",
-        "zetacomponents/mail": "dev-master"
+        "zetacomponents/mail": "dev-master",
+        "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
         "classmap": [
