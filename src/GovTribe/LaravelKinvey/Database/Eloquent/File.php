@@ -39,8 +39,6 @@ class File extends Model {
 	 */
 	public function download($pathToFile, $name = null, array $headers = array())
 	{
-		dd($this->offsetGet('_downloadURL'));
-		die;
 		$response = StaticClient::get($this->offsetGet('_downloadURL'), array(
 			'headers' => $headers,
 			'timeout' => $this->timeout,
