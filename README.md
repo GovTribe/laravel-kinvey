@@ -5,7 +5,7 @@
 
 This package provides integration between Kinvey's great back end as a service platform and Laravel 4. It's based on version 2 of their [REST API](http://devcenter.kinvey.com/rest/guides/getting-started).
 
-[BaaS](http://en.wikipedia.org/wiki/Backend_as_a_service) providers like Kinvey can serve as a one stop shop for infrastructure. You give up a little in flexibility, but gain the simplicity of having one service provide several features across your app. I tailored this specifically to Laravel because I think that to get the most value you can out of a service like Kinvey it needs to be tied closely to the framework you use.
+[BaaS](http://en.wikipedia.org/wiki/Backend_as_a_service) providers like Kinvey can serve as a one stop shop for infrastructure. You give up a little in flexibility, but gain the simplicity of having one service provide several features across your app. I tailored this specifically to Laravel because I think that to get the most out of a service like Kinvey it needs to be tied closely to the framework you use.
 
 - [Install](#installation)
 - [Configure](#configure)
