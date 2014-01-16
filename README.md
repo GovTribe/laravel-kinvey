@@ -11,8 +11,6 @@ This package provides integration between Kinvey's great back end as a service p
 - [Configure](#configure)
 - [Use](#use)
 
-*Warning*: The security aspects of this package (specifically auth) require further testing. Or at least a look over by someone who's done this before.
-
 ## Install
 
 Add laravel-kinvey to your composer.json file:
