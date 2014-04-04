@@ -70,11 +70,13 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 
 				// Session tokens
 				case ($token = Session::get('kinvey')):
+				case ($token = $client->getAuthToken());
 				case ($command['authMode'] === 'session'):
 
 					$token = null;
 
 					if ($command['token']) $token = $command['token'];
+					if ($client->getAuthToken()) $token = $client->getAuthToken();
 					if (Session::get('kinvey')) $token = Session::get('kinvey');
 
 					if(!$token) throw new ValidationException('token is required when using the the session authMode');

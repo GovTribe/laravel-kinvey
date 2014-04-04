@@ -38,6 +38,13 @@ class KinveyClient extends Client implements FromConfigInterface {
 	protected $authMode = 'app';
 
 	/**
+	 * Authentication token used by this client.
+	 *
+	 * @var string
+	 */
+	protected $authToken = null;
+
+	/**
 	 * Static factory method used to turn an array or collection of configuration data into an instantiated object.
 	 *
 	 * @param array|Collection $config Configuration data
@@ -106,6 +113,27 @@ class KinveyClient extends Client implements FromConfigInterface {
 	public function getAuthMode()
 	{
 		return $this->authMode;
+	}
+
+	/**
+	 * Set the client's authentication token.
+	 *
+	 * @param  string $authToken
+	 * @return void
+	 */
+	public function setAuthToken($authToken)
+	{
+		$this->authToken = $authToken;
+	}
+
+	/**
+	 * Get the client's authentication token.
+	 *
+	 * @return string
+	 */
+	public function getAuthToken()
+	{
+		return $this->authToken;
 	}
 
 	/**
