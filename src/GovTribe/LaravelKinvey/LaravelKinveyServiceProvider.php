@@ -24,7 +24,6 @@ class LaravelKinveyServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('govtribe/laravel-kinvey', 'kinvey');
-		$this->app['config']->set('database.connections.kinvey', array('driver' => 'kinvey'));
 
 		Model::setConnectionResolver($this->app['db']);
 		Model::setEventDispatcher($this->app['events']);

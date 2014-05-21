@@ -68,6 +68,7 @@ abstract class LaravelKinveyTestCase extends TestCase {
 		$this->app['config']->set('auth', $authConfig);
 
 		// Default database
+		$this->app['config']->set('database.connections.kinvey', array('driver' => 'kinvey'));
 		$this->app['config']->set('database.default', 'kinvey');
 
 		// Set the auth mode to admin.
