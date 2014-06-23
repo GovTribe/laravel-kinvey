@@ -2,8 +2,14 @@
 
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
+use Jenssegers\Mongodb\Eloquent\SoftDeletingTrait;
 
 class User extends Model implements UserInterface, RemindableInterface {
+
+	/**
+	 * Suspend users instead of deleting them.
+	 */
+	use SoftDeletingTrait;
 
 	/**
 	 * The collection associated with the model.
@@ -12,12 +18,7 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 */
 	protected $collection = 'user';
 
-	/**
-	 * Suspend users instead of deleting them.
-	 *
-	 * @var bool
-	 */
-	protected $softDelete = true;
+	protected $dates = ['deleted_at'];
 
 	/**
 	 * The "booting" method of the model.

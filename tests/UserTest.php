@@ -25,7 +25,6 @@ class UserTest extends LaravelKinveyTestCase {
 	public function tearDown()
 	{
 		$user = User::withTrashed()->where('_id', $this->testUser->_id)->first()->forceDelete();
-		$this->testUser = array();
 	}
 
 	/**
@@ -33,11 +32,12 @@ class UserTest extends LaravelKinveyTestCase {
 	 *
 	 * @return void
 	 */
-	public function testSuspendUser()
+	public function testSuspendUserIsSuspended()
 	{
 		$this->testUser->delete();
 
 		$suspendedUser = User::find($this->testUser->_id);
+
 		$this->assertEquals(null, $suspendedUser, 'User is suspended');
 		$this->assertEquals(false, $this->testUser->exists, 'Exists boolean is false');
 
@@ -54,6 +54,11 @@ class UserTest extends LaravelKinveyTestCase {
 	 */
 	public static function createTestUser()
 	{
+		if ($user = User::withTrashed()->where('email', 'test@govtribe.com')->first())
+		{
+			$user->forceDelete();
+		}
+
 		Kinvey::setAuthMode('app');
 		$user = new User();
 		$user->setRawAttributes(array(
