@@ -3,11 +3,17 @@
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Auth\AuthServiceProvider;
-use GovTribe\LaravelKinvey\Auth\AuthManager;
-use GovTribe\LaravelKinvey\Database\Eloquent\User;
 
-class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
+use GovTribe\LaravelKinvey\Auth\KinveyUserProvider;
+
+class LaravelKinveyAuthServiceProvider extends ServiceProvider {
+
+	/**
+	 * Indicates if loading of the provider is deferred.
+	 *
+	 * @var bool
+	 */
+	protected $defer = false;
 
 	/**
 	 * Bootstrap the application events.
@@ -18,14 +24,24 @@ class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
 	{
 		$app = $this->app;
 
-		$this->app->bind('auth', function($app)
+		$this->app['auth']->extend('eloquent', function($app)
 		{
-			return new AuthManager($app);
+			return new KinveyUserProvider(
+				$app['db']->connection('kinvey'), 
+				$app['kinvey'],
+				$app['config']['auth']['model']
+			);
 		});
+	}
 
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
 		$this->registerEvents();
-
-		parent::boot();
 	}
 
 	/**
@@ -36,15 +52,14 @@ class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
 	public function registerEvents()
 	{
 		//Store the Kinvey auth token in the user's session, and clear it on logout.
-		Event::listen('auth.login', function($user)
+		$this->app->events->listen('auth.login', function($user)
 		{
-			Session::put('kinvey', $user->_kmd['authtoken']);
+			$this->app->session->put('kinvey', $user->_kmd['authtoken']);
 		});
 
-		Event::listen('auth.logout', function($user)
+		$this->app->events->listen('auth.logout', function($user)
 		{
-			Session::forget('kinvey');
+			$this->app->session->forget('kinvey');
 		});
 	}
-
 }
