@@ -13,7 +13,7 @@
     "require": {
         "php": ">=5.4.0",
         "guzzle/guzzle": "~3.8",
-        "jenssegers/mongodb": "1.4.1",
+        "jenssegers/mongodb": "1.4.2",
         "illuminate/support": "4.2.*",
         "illuminate/cache": "4.2.*",
         "illuminate/auth": "4.2.*",
