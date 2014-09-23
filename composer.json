@@ -21,7 +21,7 @@
         "illuminate/events": "4.2.x"
     },
     "require-dev": {
-        "orchestra/testbench": "2.1.*",
+        "orchestra/testbench": "2.2.*",
         "zetacomponents/mail": "dev-master",
         "satooshi/php-coveralls": "dev-master"
     },
