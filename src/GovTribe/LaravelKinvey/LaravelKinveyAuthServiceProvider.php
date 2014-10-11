@@ -1,31 +1,27 @@
 <?php namespace GovTribe\LaravelKinvey;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Auth\AuthServiceProvider;
-use GovTribe\LaravelKinvey\Auth\AuthManager;
-use GovTribe\LaravelKinvey\Database\Eloquent\User;
+use Illuminate\Auth\AuthServiceProvider as BaseAuthServiceProvider;
+use GovTribe\LaravelKinvey\Auth\KinveyUserProvider;
 
-class LaravelKinveyAuthServiceProvider extends AuthServiceProvider {
+class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 
 	/**
-	 * Bootstrap the application events.
+	 * Register the service provider.
 	 *
 	 * @return void
 	 */
-	public function boot()
+	public function register()
 	{
-		$app = $this->app;
+		parent::register();
 
-		$this->app->bind('auth', function($app)
+		$this->app->auth->extend('kinvey', function($app)
 		{
-			return new AuthManager($app);
+			return new KinveyUserProvider(
+				$this->app->make('hash'),
+				$this->app->config['auth.model'],
+				$this->app->make('kinvey')
+			);
 		});
-
-		$this->registerEvents();
-
-		parent::boot();
 	}
 
 	/**

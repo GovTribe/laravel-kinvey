@@ -138,4 +138,14 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model {
 
 		return $this->save();
 	}
+
+	/**
+	 * Get the table qualified key name.
+	 *
+	 * @return string
+	 */
+	public function getQualifiedKeyName()
+	{
+		return $this->getKeyName();
+	}
 }
