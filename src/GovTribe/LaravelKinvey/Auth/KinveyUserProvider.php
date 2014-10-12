@@ -52,7 +52,13 @@ class KinveyUserProvider extends IlluminateEloquentUserProvider implements UserP
 	 */
 	public function retrieveByToken($identifier, $token)
 	{
-		//
+		$this->kinvey->setAuthMode('admin');
+		
+		$user = parent::retrieveByToken($identifier, $token);
+		
+		$this->kinvey->setAuthMode('app');
+		
+		return $user;
 	}
 
 	/**
@@ -64,9 +70,12 @@ class KinveyUserProvider extends IlluminateEloquentUserProvider implements UserP
 	 */
 	public function updateRememberToken(UserInterface $user, $token)
 	{
+		$this->kinvey->setAuthMode('admin');
+		
 		$user->setRememberToken($token);
-
 		$user->save();
+		
+		$this->kinvey->setAuthMode('app');
 	}
 
 	/**
