@@ -6,6 +6,18 @@ use GovTribe\LaravelKinvey\Auth\KinveyUserProvider;
 class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 
 	/**
+	 * Bootstrap the application events.
+	 *
+	 * @return void
+	 */
+	public function boot()
+	{
+		parent::boot();
+
+		$this->registerEvents();
+	}
+
+	/**
 	 * Register the service provider.
 	 *
 	 * @return void
