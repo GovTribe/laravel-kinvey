@@ -2,8 +2,11 @@
 
 use Illuminate\Auth\AuthServiceProvider as BaseAuthServiceProvider;
 use GovTribe\LaravelKinvey\Auth\KinveyUserProvider;
+use Event;
+use Session;
 
 class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
+
 
 	/**
 	 * Bootstrap the application events.
