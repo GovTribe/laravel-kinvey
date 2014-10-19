@@ -56,6 +56,13 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 			// Based on the command's authMode', get the correct credentials.
 			switch (true)
 			{
+				// Admin mode
+				case ($command['authMode'] === 'admin'):
+
+					$username = $config->get('appKey');
+					$password = $config->get('masterSecret');
+					$scheme = 'Basic';
+					break;
 
 				// Username and password
 				case ($command['authMode'] === 'user'):
@@ -92,14 +99,6 @@ class KinveyAuthPlugin extends KinveyGuzzlePlugin implements EventSubscriberInte
 
 					$username = $config->get('appKey');
 					$password = $config->get('appSecret');
-					$scheme = 'Basic';
-					break;
-
-				// Admin mode
-				case ($command['authMode'] === 'admin'):
-
-					$username = $config->get('appKey');
-					$password = $config->get('masterSecret');
 					$scheme = 'Basic';
 					break;
 			}
