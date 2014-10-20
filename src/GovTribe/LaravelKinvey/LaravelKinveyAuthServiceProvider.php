@@ -49,7 +49,20 @@ class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 		//Store the Kinvey auth token in the user's session, and clear it on logout.
 		Event::listen('auth.login', function($user)
 		{
-			Session::put('kinvey', $user->_kmd['authtoken']);
+			// User logged in via an OAuth provider, we need to log them into Kinvey.
+			if (!isset($user->_kmd['authtoken']))
+			{
+				$credentials = [
+					'_socialIdentity' => $user->_socialIdentity,
+				];
+
+				$kinveyResponse = $this->app['kinvey']->loginOAuth($credentials);
+				$kinveyAuthToken = $kinveyResponse['_kmd']['authtoken'];
+			}
+			// User logged in directly via Kinvey.
+			else $kinveyAuthToken = $user->_kmd['authtoken'];
+
+			Session::put('kinvey', $kinveyAuthToken);
 		});
 
 		Event::listen('auth.logout', function($user)
