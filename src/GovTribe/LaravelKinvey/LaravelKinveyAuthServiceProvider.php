@@ -2,6 +2,7 @@
 
 use Illuminate\Auth\AuthServiceProvider as BaseAuthServiceProvider;
 use GovTribe\LaravelKinvey\Auth\KinveyUserProvider;
+use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException;
 use Event;
 use Session;
 
@@ -70,5 +71,4 @@ class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 			Session::forget('kinvey');
 		});
 	}
-
 }
