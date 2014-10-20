@@ -93,6 +93,20 @@ $APIV2Description = array(
 				),
 			),
 		),
+		'loginOAuth' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#login',
+			'httpMethod' => 'POST',
+			'uri' => '/user/{appKey}/login',
+			'parameters' => array(
+				'_socialIdentity' => array(
+					'location' => 'json',
+					'type' => 'array',
+					'description' => 'Social identity',
+					'required' => true,
+				),
+			),
+		),
 		'logout' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#logout',
