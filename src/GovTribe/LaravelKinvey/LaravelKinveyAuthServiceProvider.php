@@ -70,5 +70,13 @@ class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 		{
 			Session::forget('kinvey');
 		});
+
+		$this->app->error(function(KinveyResponseException $e)
+		{
+			if ($e->getStatusCode() === 401)
+			{
+				Session::flush();
+			}
+		});
 	}
 }
