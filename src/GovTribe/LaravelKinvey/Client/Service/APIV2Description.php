@@ -149,6 +149,20 @@ $APIV2Description = array(
 			'httpMethod' => 'GET',
 			'uri' => '/user/{appKey}/_me',
 		),
+		'checkUsernameExists' => array(
+			'extends' => 'authOperation',
+			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#userexists',
+			'httpMethod' => 'POST',
+			'uri' => '/rpc/{appKey}/check-username-exists',
+			'parameters' => array(
+				'username' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Username to check',
+					'required' => true,
+				),
+			),
+		),
 		'resetPassword' => array(
 			'extends' => 'authOperation',
 			'documentationUrl' => 'http://devcenter.kinvey.com/rest/guides/users#passwordreset',
