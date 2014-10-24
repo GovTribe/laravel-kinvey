@@ -49,7 +49,7 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 */
 	public function getAuthIdentifier()
 	{
-		return $this->_id;
+		return $this->username;
 	}
 
 	/**
