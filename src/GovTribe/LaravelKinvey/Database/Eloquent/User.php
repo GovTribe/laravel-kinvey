@@ -18,6 +18,13 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 * @var bool
 	 */
 	protected $softDelete = true;
+	
+	/**
+	 * The model's primary key.
+	 *
+	 * @var string
+	 */
+	protected $primaryKey = 'username';
 
 	/**
 	 * The "booting" method of the model.
