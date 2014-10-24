@@ -56,7 +56,11 @@ class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 
 		Event::listen('auth.logout', function($user)
 		{
-			$this->app->make('kinvey')->logout();
+			try
+			{
+				$this->app->make('kinvey')->logout();
+			}
+			catch(KinveyResponseException $e){}
 		});
 
 		$this->app->error(function(KinveyResponseException $e)
