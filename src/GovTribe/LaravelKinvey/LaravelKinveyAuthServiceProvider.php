@@ -51,11 +51,12 @@ class LaravelKinveyAuthServiceProvider extends BaseAuthServiceProvider {
 		Event::listen('auth.login', function($user)
 		{
 			Session::put('kinvey', $user->_kmd['authtoken']);
+			Session::save();
 		});
 
 		Event::listen('auth.logout', function($user)
 		{
-			Session::forget('kinvey');
+			$this->app->make('kinvey')->logout();
 		});
 
 		$this->app->error(function(KinveyResponseException $e)
