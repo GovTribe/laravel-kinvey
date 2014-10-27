@@ -158,6 +158,16 @@ class KinveyClient extends Client implements FromConfigInterface {
 	}
 
 	/**
+	 * Get the collection name used by this client.
+	 *
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->getCollectionName();
+	}
+
+	/**
 	 * Retrieve a truncated exponential backoff plugin that will retry
 	 * requests for certain Kinvey error codes.
 	 *
