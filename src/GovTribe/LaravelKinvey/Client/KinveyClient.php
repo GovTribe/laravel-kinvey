@@ -17,7 +17,6 @@ use GovTribe\LaravelKinvey\Client\Plugins\KinveyExceptionPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyFileMetadataPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyEntityPathRewritePlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyUserSoftDeletePlugin;
-use GovTribe\LaravelKinvey\Client\Plugins\KinveyRemoveInternalDataPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyInjectEntityIdPlugin;
 use GovTribe\LaravelKinvey\Client\Plugins\KinveyErrorCodeBackoffStrategy;
 
@@ -78,7 +77,6 @@ class KinveyClient extends Client implements FromConfigInterface {
 			new KinveyFileMetadataPlugin(),
 			new KinveyEntityPathRewritePlugin(),
 			new KinveyUserSoftDeletePlugin(),
-			new KinveyRemoveInternalDataPlugin(),
 			new KinveyInjectEntityIdPlugin(),
 			new KinveyExceptionPlugin(new KinveyResponseExceptionFactory()),
 			self::getExponentialBackoffPlugin(
