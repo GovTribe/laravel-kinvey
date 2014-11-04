@@ -5,6 +5,8 @@ use GovTribe\LaravelKinvey\Client\KinveyClient;
 use GovTribe\LaravelKinvey\Client\Exception\KinveyResponseException;
 use Jenssegers\Mongodb\Query\Builder as MongoBuilder;
 use DateTime;
+use Config;
+use Auth;
 
 class Builder extends MongoBuilder
 {
@@ -102,7 +104,6 @@ class Builder extends MongoBuilder
 	public function setCollection(KinveyClient $collection)
 	{
 		// We'll treat the KinveyClient instance as the Mongo 'collection'.
-
 		$this->collection = $collection;
 	}
 
@@ -132,6 +133,16 @@ class Builder extends MongoBuilder
 		if (isset($query['_id']))
 		{
 			$response = $this->collection->update($this->formatQuery($query));
+
+			// If this is a user, and they've changed their password, trigger a new login event.
+			if (isset($response['_kmd']['authtoken']))
+			{
+				$currentUser = Auth::user();
+				$_kmd = $currentUser->_kmd;
+				$_kmd['authtoken'] = $response['_kmd']['authtoken'];
+				$currentUser->_kmd = $_kmd;
+				Auth::login($currentUser);
+			}
 		}
 		//Update many.
 		else
