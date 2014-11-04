@@ -135,7 +135,7 @@ class Builder extends MongoBuilder
 			$response = $this->collection->update($this->formatQuery($query));
 
 			// If this is a user, and they've changed their password, trigger a new login event.
-			if (isset($response['_kmd']['authtoken']))
+			if (Auth::user() && isset($response['_kmd']['authtoken']))
 			{
 				$currentUser = Auth::user();
 				$_kmd = $currentUser->_kmd;
