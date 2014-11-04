@@ -252,6 +252,12 @@ $APIV2Description = array(
 					'description' => 'Username',
 					'required' => false,
 				),
+				'password' => array(
+					'location' => 'json',
+					'type' => 'string',
+					'description' => 'Password',
+					'required' => false,
+				),
 				'query' => array(
 					'location' => 'query',
 					'type' => 'array',
